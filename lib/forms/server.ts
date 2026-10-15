@@ -1,4 +1,4 @@
-import { getDoc, putDoc, listDocs } from "@/lib/store";
+import { getDoc, putDoc, listDocs, countDocs, delDoc, delCollection } from "@/lib/store";
 import type { Form, FormResponse, FormStats, Question } from "./types";
 import { rid } from "./templates";
 const QTYPES = new Set(["short_text", "long_text", "email", "number", "choice", "yes_no", "rating", "scale", "date", "statement"]);
@@ -24,8 +24,40 @@ export function sanitizeForm(input: any, base: Pick<Form, "id" | "ownerId" | "cr
 export const getForm = (id: string) => getDoc<Form>("forms", id);
 export const saveForm = (f: Form) => putDoc("forms", f.id, f);
 export async function listForms(ownerId: string) { return (await listDocs<Form>("forms")).filter(f => f.ownerId === ownerId).sort((a, b) => b.updatedAt - a.updatedAt); }
-export const getResponses = async (formId: string) => (await getDoc<FormResponse[]>("responses", formId)) ?? [];
-export async function addResponse(r: FormResponse) { const all = await getResponses(r.formId); if (all.length >= 5000) throw new Error("Response limit reached"); all.push(r); await putDoc("responses", r.formId, all); }
-export const getStats = async (formId: string) => (await getDoc<FormStats>("stats", formId)) ?? { views: 0 };
-export async function bumpViews(formId: string) { const s = await getStats(formId); s.views++; await putDoc("stats", formId, s); }
+const responseCollection = (formId: string) => `responses_${formId}`;
+const viewCollection = (formId: string) => `views_${formId}`;
+
+export async function getResponses(formId: string): Promise<FormResponse[]> {
+  // Preserve old array documents without a destructive migration. New submissions
+  // have independent document IDs, so concurrent requests cannot overwrite peers.
+  const [legacy, records] = await Promise.all([
+    getDoc<FormResponse[]>("responses", formId),
+    listDocs<FormResponse>(responseCollection(formId)),
+  ]);
+  const byId = new Map((legacy ?? []).map(response => [response.id, response]));
+  for (const response of records) byId.set(response.id, response);
+  return [...byId.values()].sort((a, b) => a.submittedAt - b.submittedAt || a.id.localeCompare(b.id));
+}
+
+export const addResponse = (response: FormResponse) => putDoc(responseCollection(response.formId), response.id, response);
+
+export async function getStats(formId: string): Promise<FormStats> {
+  const [legacy, views] = await Promise.all([
+    getDoc<FormStats>("stats", formId),
+    countDocs(viewCollection(formId)),
+  ]);
+  return { views: (legacy?.views ?? 0) + views };
+}
+
+export async function bumpViews(formId: string) {
+  const id = `v${crypto.randomUUID()}`;
+  await putDoc(viewCollection(formId), id, { id, viewedAt: Date.now() });
+}
+
+export async function deleteResponseData(formId: string) {
+  await Promise.all([
+    delDoc("responses", formId), delDoc("stats", formId),
+    delCollection(responseCollection(formId)), delCollection(viewCollection(formId)),
+  ]);
+}
 export const publicForm = ({ ownerId: _o, ...rest }: Form) => rest;

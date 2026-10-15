@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@/lib/session";
-import { getForm, saveForm, sanitizeForm, publicForm } from "@/lib/forms/server";
+import { getForm, saveForm, sanitizeForm, publicForm, deleteResponseData } from "@/lib/forms/server";
 import { delDoc } from "@/lib/store";
 export const runtime = "nodejs";
 type Ctx = { params: Promise<{ id: string }> };
@@ -20,5 +20,5 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
 export async function DELETE(_: NextRequest, { params }: Ctx) {
   const { id } = await params; const u = await currentUser(); const f = await getForm(id);
   if (!f || !u || f.ownerId !== u.id) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  await delDoc("forms", id); await delDoc("responses", id); await delDoc("stats", id); return new NextResponse(null, { status: 204 });
+  await delDoc("forms", id); await deleteResponseData(id); return new NextResponse(null, { status: 204 });
 }
