@@ -2,7 +2,7 @@
 
 Baseline: `98ef956` · Audit started: 2026-10-15 · Branch: `qa/parity-baseline`
 
-**Incomplete. No screen is certified as a match, and no fix PR is open.** This is a source-backed inventory. Dependencies and code checks now work; browser evidence remains pending. Source inspection cannot certify visual or behavioral parity.
+**Full parity remains incomplete. No screen is certified as a match.** The audit/tooling, calendar-date validation and response-storage fixes are published as PRs linked below. Dependencies, code checks, local HTTP tests and Firestore emulator checks work; browser evidence remains pending. Source inspection cannot certify visual parity.
 
 ## Scope and acceptance
 
@@ -11,7 +11,7 @@ Baseline: `98ef956` · Audit started: 2026-10-15 · Branch: `qa/parity-baseline`
 - Include the complete authoring → publish → anonymous respondent → stored response → results/export flow.
 - Remove paid-tier restrictions, upgrade prompts, billing requirements and artificial plan quotas. This is an intentional product difference, not permission to omit features. Do not change payment-processing behavior or secrets.
 - Recreate assets; retain the existing independent-project disclaimer and identity. Use licensed OFL alternatives for proprietary fonts. Do not copy proprietary source or add Typeform marks.
-- One logical area per PR, paired original/clone evidence at 1440×900 and 390×844, before/after captures, report updates, lint, typecheck and build. Do not merge.
+- One logical area per PR, paired original/clone evidence at 1440×900 and 390×844, before/after captures, report updates, lint, typecheck and build. On 2026-10-15 the owner authorized pushing, reviewing and merging changes that pass review, superseding the earlier no-merge instruction. Missing browser evidence remains explicitly recorded; these PRs do not certify screen parity.
 
 Statuses: `match` requires evidence; `differs` means a concrete implementation discrepancy; `missing` means the feature is absent/stubbed. `unverified` is a temporary audit state for features that cannot yet be compared. Unverified rows **do not satisfy** the completion criterion and are not justified exceptions.
 
@@ -34,8 +34,10 @@ Severity: P0 = potential lost/corrupt responses; P1 = core workflow blocked or m
 | E11 | Resumed setup: process-local DNS resolution restored npm downloads; installed a local temporary Node 24.22 runtime. Added Next-compatible ESLint config and fixed pre-existing JSX escaping/helper naming errors. | `npm run lint` passes with one existing image advisory; `npm run typecheck`, all 19 unit tests and `npm run build` pass. E4/E5/E9 are historical, resolved blockers. No cloud credentials configured; tests use local files. |
 | E12 | Playwright Firefox also aborts before opening a page, including elevated execution. A local Next production server and HTTP requests work. Next's tracing root is now explicitly the repository. | Browser comparison/account setup remain blocked. API checks are useful regression evidence, but do not replace paired browser captures. |
 | E13 | Local reproduction retained only 1 of 100 concurrent submissions and 1 of 100 concurrent views. Independent response/view records now retain all 100, preserve legacy data, and remove the artificial 5,000-response cap. | All 45 unit tests, lint, typecheck and build pass. `scripts/check-local-api.mjs` passes against the production build with a fresh temporary local directory: date validation, concurrent traffic, owner-only results, CSV and deletion. Firestore behavior remains untested. |
+| E14 | Two integration tests pass against a local Firestore emulator using the production storage code: 100 simultaneous responses/views, aggregate counts, chunked legacy response reads, and deletion without affecting another form. | No hosted database or credentials used. Real cloud configuration is not exercised; browser parity remains unverified. |
+| E15 | GitHub connector access restored. Command-line push cannot access credentials in this session, so reviewed Git blobs/trees were uploaded through the authenticated connector. Every remote tree hash was checked against its local tree before opening a PR. | E7's publishing blocker is resolved. PR links below contain the review scope, tests and evidence limits. Existing Vercel automation runs on published commits; no cloud services or billing settings were provisioned or changed. |
 
-Cost constraint: source, captures, reports and test fixtures stay on local disk during development. The production-build regression script explicitly disables cloud storage and removes its own temporary data. No paid APIs, cloud provisioning or deployment are authorized by this verification workflow. Requested PRs would upload code/evidence to GitHub; existing account billing and future hosting costs are outside local-file guarantees.
+Cost constraint: source, captures, reports and test fixtures stay on local disk during development. The production-build regression script explicitly disables cloud storage and removes its own temporary data. Firestore integration tests require an explicit loopback emulator address and use a demo project without credentials. No paid APIs or cloud provisioning are used. The owner authorized GitHub publication and merges; existing repository automation can run on those changes. Existing account billing and future hosting costs are outside local-file guarantees.
 
 For every row below, screenshot value `pending E3` means **no screenshot captured**, at either viewport. Code links identify the inspected implementation, not observed original behavior. Rows are a baseline inventory, not an assertion that every difference has been discovered.
 
@@ -148,7 +150,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | R07 | Thank-you screens and redirect | differs | P2 | One static ending; missing conditional endings and redirects. | pending E3 |
 | R08 | Unpublished form message | differs | P1 | [Public route](../app/f/[id]/page.tsx) calls generic notFound for both missing and unpublished forms. | pending E3 |
 | R09 | Server branching and response validation | unverified | P1 | [validateSubmission](../lib/forms/logic.ts) evaluates visited path and rejects unknown question IDs; verify stored answers after backtracking. | pending E3 |
-| R10 | Durable and concurrent response storage | unverified | P0 | Reproduced lost updates and fixed locally on `fix/response-storage` with separate response records and atomic local-file replacement. 100 simultaneous submissions retained through the real HTTP API; legacy reads and form-data deletion covered. Firestore and browser verification remain pending (E13). | pending E3 |
+| R10 | Durable and concurrent response storage | unverified | P0 | Reproduced lost updates and fixed in PR #3 with separate response records and atomic local-file replacement. 100 simultaneous submissions retained through the real HTTP API and Firestore emulator; legacy reads and isolated form-data deletion covered (E13/E14). Browser comparison and real cloud configuration remain unverified. | pending E3 |
 | R11 | Response limits | differs | P1 | Removed the artificial 5,000-response storage cap; regression retains response 5,001. UI still advertises ten responses and needs correction. Real disk/provider capacity is finite; no promise of unlimited hosted storage. | pending E3 |
 | R12 | Views, starts and step timing | differs | P1 | Concurrent view losses fixed with independent events; real HTTP check counts all 100 views. No starts, device or per-step timing instrumentation yet. | pending E3 |
 | R13 | Retry/offline behavior | unverified | P1 | [FillForm](../components/typeform/FillForm.tsx) catches submission errors; test retained answers and duplicate prevention after uncertain network outcome. | pending E3 |
@@ -180,7 +182,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | EX3 | Pricing and other marketing pages beyond home/login. | Explicitly out of scope. No pricing PR planned. |
 | DEC1 | Payment question functionality vs. original instruction not to change payment behavior. | Human scope decision needed before implementation. No payment integration changes made. |
 | DEC2 | Hosted AI/video/storage/integrations with real operating costs. | Implement free/local alternatives where feasible. Missing implementations are not accepted exceptions; record capability-specific constraints and demonstrate the alternative. |
-| DEC3 | Restore browser execution and GitHub API connectivity. | npm/build access restored. Browser and GitHub API remain environment blockers for evidence, account setup and PR creation. |
+| DEC3 | Restore browser execution. | npm/build access and GitHub publication restored. Browser execution remains an environment blocker for paired evidence and account setup. |
 
 ## REA reference
 
@@ -193,7 +195,7 @@ The owner supplied [morluto/rea](https://github.com/morluto/rea), inspected at `
 3. Run `node scripts/parity-capture.mjs` to capture public home/login pairs. It writes viewport/full-page PNGs, computed styles and a side-by-side HTML index under ignored `test-results/parity/`. It does not claim a match or exercise authenticated functionality.
 4. Compare every product scenario using equivalent audit-owned forms on original and clone. Capture at 1440×900 and 390×844; record browser/version, page state, font readiness, locale, cookie state and animation state. Use real buttons/keyboard, not API-only tests, to prove end-to-end behavior.
 5. For each fix, add original/before/after evidence under `docs/parity/<area>/`, link the exact report rows, and include focused behavioral regression evidence. Do not add account/session artifacts or third-party proprietary assets to application code.
-6. Run lint, typecheck, unit tests as relevant, and build. Open one small PR per logical area only after recording actual gate outcomes. Never treat an unavailable check as passed. Do not merge.
+6. Run lint, typecheck, unit tests as relevant, and build. For storage changes, run `FIRESTORE_EMULATOR_HOST=127.0.0.1:8187 node node_modules/vitest/vitest.mjs run tests/integration/firestore-storage.test.ts` against a separately started local Firestore emulator. Open one small PR per logical area only after recording actual gate outcomes. Never treat an unavailable check as passed. Review and merge verified changes under the owner's updated authorization.
 
 Recommended order: restore verification → home/login → dashboard/free-access copy → builder state/publishing → response integrity → question types/settings → logic/variables → design → share/integrations → results/analytics → remaining product modules. Split areas further whenever a PR would otherwise be too large.
 
@@ -201,7 +203,7 @@ Recommended order: restore verification → home/login → dashboard/free-access
 
 | Area | PR | Validation | Evidence |
 | --- | --- | --- | --- |
-| Baseline report, public capture utility and lint gate | Local branch `qa/parity-baseline`; not opened | Lint, typecheck, 19 unit tests, build and capture-script syntax pass (E11). One existing image lint advisory. | Source audit only; no paired screenshots. Tooling/JSX escaping changes preserve rendered text. |
-| Respondent calendar-date validation | Local branch `fix/respondent-date-validation`; not opened | Lint, typecheck, 39 unit tests and production build pass | Twenty new invalid/valid/optional date cases exercise both answer and submission validation; browser captures pending. |
-| Response storage and view-count integrity | Local branch `fix/response-storage`; not opened | Lint, typecheck, 45 unit tests, production build and local HTTP regression pass | Reproduced 99 lost responses/views per 100 concurrent requests before the fix; all retained after. Legacy compatibility, quota removal, same-ID deduplication and isolated deletion tested locally. Firestore and browser captures pending. |
-| Product fixes | Not opened | Not implemented/verified yet | All unresolved rows above remain open |
+| Baseline report, public capture utility and lint gate | [PR #1](https://github.com/tommy-muckstack/typeformisdead/pull/1) | Lint, typecheck, 19 unit tests, build and capture-script syntax pass (E11). One existing image lint advisory. | Source audit only; no paired screenshots. Tooling/JSX escaping changes preserve rendered text. |
+| Respondent calendar-date validation | [PR #2](https://github.com/tommy-muckstack/typeformisdead/pull/2) | Lint, typecheck, 39 unit tests and production build pass | Twenty new invalid/valid/optional date cases exercise both answer and submission validation; browser captures pending. |
+| Response storage and view-count integrity | [PR #3](https://github.com/tommy-muckstack/typeformisdead/pull/3) | Lint, typecheck, 45 unit tests, production build, local HTTP regression and two Firestore emulator integration tests pass | Reproduced 99 lost responses/views per 100 concurrent requests before the fix; all retained after. Legacy/chunk compatibility, quota removal, same-ID deduplication and isolated deletion tested. Browser captures pending. |
+| Remaining product work | Not opened | Not implemented/verified yet | All unresolved rows above remain open |
