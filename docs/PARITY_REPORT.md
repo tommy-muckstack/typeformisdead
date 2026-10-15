@@ -46,13 +46,13 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | ID | Screen / feature | Status | Severity | Source evidence / next comparison | Screenshots |
 | --- | --- | --- | --- | --- | --- |
 | H01 | Stable home sections, copy and claims | differs | P1 | [TfHome](../components/TfHome.tsx) attributes customer counts, stories and unavailable AI/automation to the clone. Replace misleading claims with truthful content while preserving section structure. | pending E3 |
-| H02 | Fonts, colors, spacing, radii, shadows | unverified | P3 | [Styles](../components/tfhome.css); capture computed properties and paired renders for every section. | pending E3 |
-| H03 | Desktop navigation and mega-menus | missing | P2 | [Nav](../components/Pk.tsx) renders every menu link as `href="#"`; no flyouts. Even Pricing points to `#`, though pricing parity is excluded. | pending E3 |
-| H04 | Mobile menu and navigation | missing | P1 | [TfHomeM](../components/TfHomeM.tsx) hamburger is an aria-hidden span; CTA mapping sends unrelated actions to login. | pending E3 |
+| H02 | Fonts, colors, spacing, radii, shadows | differs | P3 | Owner screenshot establishes the light serif hero variant. Rebuilt hero geometry/colors with a local OFL serif font and original sample-form composition; after/mobile rendering still unverified. Lower sections remain to compare. | [Original/before](parity/home-reference/README.md) |
+| H03 | Desktop navigation and mega-menus | differs | P2 | Owner explicitly requested every home CTA/navigation item go to login. Platform, Solutions, Resources and Pricing now link to `/login`; mega-menus are intentionally replaced. Browser verification pending. | [Reference](parity/home-reference/README.md) |
+| H04 | Mobile menu and navigation | differs | P1 | Responsive home header now has a keyboard-accessible menu link to login, per owner clarification. Supersedes the static mobile replica; mobile rendering remains unverified. | pending E3 |
 | H05 | Illustrations and product demos | differs | P2 | [TfHome](../components/TfHome.tsx) and [mobile](../components/TfHomeM.tsx) use empty shapes/blocks. Need original recreated artwork, not copied assets. | pending E3 |
 | H06 | Tabs, carousels and animation | missing | P2 | Hero tabs, customer dots, integrations and announcement close control are static markup. | pending E3 |
 | H07 | Hover, focus, keyboard and reduced motion | unverified | P2 | Compare real focus order, menu Escape behavior, visible focus and animation preferences. | pending E3 |
-| H08 | Footer links and disclaimer | differs | P2 | [Foot](../components/Pk.tsx) uses `#` for all links. Preserve disclaimer. Check that mobile exposes it too. | pending E3 |
+| H08 | Footer links and disclaimer | differs | P2 | Home footer navigation links to login, per owner clarification; disclaimer remains in the shared responsive home DOM. Visual verification pending. | pending E3 |
 | H09 | Cookie banner and consent state | missing | P2 | No cookie-banner component/consent interaction found. Determine necessary free-product equivalent based on actual cookies. | pending E3 |
 | A01 | Login desktop/mobile layout | differs | P3 | Owner screenshots confirm undersized desktop controls/form and different panel colors/artwork. Corrected geometry, typography, spacing, divider and carousel on `fix/login-screenshot-parity`; rendered after/mobile verification remains blocked. | [Original/before and measurements](parity/login-reference/README.md) |
 | A02 | Email login and session persistence | unverified | P1 | Firebase path exists; no local Firebase configuration or account evidence. Test live deployment as requested. | pending E3 |
@@ -180,6 +180,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | EX1 | Product subscription prices, upsells, payment gates and paid-tier quotas are replaced by free access. Paid features themselves stay in scope. | Explicitly authorized by owner. Existing banners still need correction. |
 | EX2 | Independent TypeformIsDead identity, original recreated artwork, OFL substitute fonts and existing disclaimer. | Required by owner. Visual approximation still needs review. |
 | EX3 | Pricing and other marketing pages beyond home/login. | Explicitly out of scope. No pricing PR planned. |
+| EX4 | All home navigation and CTAs link to login, including Platform/Solutions/Resources/Pricing and the mobile menu. | Explicit owner clarification on 2026-10-15; replaces original mega-menu navigation. |
 | DEC1 | Payment question functionality vs. original instruction not to change payment behavior. | Human scope decision needed before implementation. No payment integration changes made. |
 | DEC2 | Hosted AI/video/storage/integrations with real operating costs. | Implement free/local alternatives where feasible. Missing implementations are not accepted exceptions; record capability-specific constraints and demonstrate the alternative. |
 | DEC3 | Restore browser execution. | npm/build access and GitHub publication restored. Browser execution remains an environment blocker for paired evidence and account setup. |
@@ -211,5 +212,5 @@ The owner supplied paired desktop home/login screenshots on 2026-10-15. They dem
 | Respondent calendar-date validation | [PR #2](https://github.com/tommy-muckstack/typeformisdead/pull/2) | Lint, typecheck, 39 unit tests and production build pass | Twenty new invalid/valid/optional date cases exercise both answer and submission validation; browser captures pending. |
 | Response storage and view-count integrity | [PR #3](https://github.com/tommy-muckstack/typeformisdead/pull/3) | Lint, typecheck, 45 unit tests, production build, local HTTP regression and two Firestore emulator integration tests pass | Reproduced 99 lost responses/views per 100 concurrent requests before the fix; all retained after. Legacy/chunk compatibility, quota removal, same-ID deduplication and isolated deletion tested. Browser captures pending. |
 | Remaining product work | Not opened | Not implemented/verified yet | All unresolved rows above remain open |
-
 | Login screenshot correction | Local branch `fix/login-screenshot-parity` | Lint, typecheck and production build pass | Owner original/before captures committed; after/mobile browser checks pending. |
+| Home hero and CTA routing | Local branch `fix/home-screenshot-parity` | Lint, typecheck, production build and 44-link HTTP routing check pass | Owner original/before captures committed; after/mobile browser checks pending. |

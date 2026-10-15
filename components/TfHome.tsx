@@ -1,23 +1,16 @@
 import Link from "next/link";
-import { Band, Btn, Nav, Foot, Mock, Gh } from "@/components/Pk";
+import { Band, Foot, Gh } from "@/components/Pk";
 import "./tfhome.css";
-import { TfHomeM } from "./TfHomeM";
+import localFont from "next/font/local";
+import { HomeHero } from "./HomeHero";
+
+const serif = localFont({ src: "../public/fonts/InstrumentSerif-Regular.ttf", weight: "400", display: "swap", variable: "--tf-hero-serif" });
 
 const Logo = ({ c = "#fff" }: { c?: string }) => <span className="tfh-logo" style={{ color: c }}><svg width="22" height="14" viewBox="0 0 22 14"><rect width="22" height="14" rx="3" fill="currentColor" /><rect x="4" y="4" width="5" height="6" rx="1" fill="#2a222b" /></svg>TypeformIsDead</span>;
 const FOOT: [string, string[]][] = [["Product", ["Pricing", "Enterprise"]], ["Templates", ["Popular templates", "Survey templates", "Quiz templates", "Recent categories"]], ["Integrations", ["Popular integrations", "Marketing apps", "Popular app categories", "More apps categories"]], ["Resources", ["Blog", "Help Center", "Community", "Podcast", "Typeform Academy", "Technical program", "Education", "Status"]], ["Company", ["About us", "Press", "Careers", "Contact sales", "Legal", "Accessibility"]]];
-export function TfNav() {
-  return <Nav logo={<Logo />} links={["Platform ⌄", "Solutions ⌄", "Resources ⌄", "Pricing"]} bg="transparent" color="#fff" pos="absolute" h={72}
-    right={<><Link className="tfh-ghost" href="/login">Log in</Link><Link className="tfh-ghost" href="/login">Contact sales</Link><Link className="tfh-solid" href="/login">Sign up</Link></>} />;
-}
 export function TfHome() {
-  return <><TfHomeM /><div className="tfh pk tfh-desk">
-    <div className="tfh-banner">Connect Claude, ChatGPT, or any MCP-ready assistant to your TypeformIsDead account. <u>Try it now</u><i>✕</i></div>
-    <Band h={2900} className="tfh-hero"><TfNav />
-      <div className="tfh-hin"><small>AI FORMS &amp; AUTOMATION</small><h1>Your favorite forms.<br />Now with AI automation.</h1>
-        <p>Combine AI forms and automated workflows to drive revenue growth. Run in-depth research and then analyze your data for rich insights. All in TypeformIsDead.</p>
-        <Link className="tfh-white" href="/login">Get started—it&apos;s free</Link>
-        <div className="tfh-tabs"><div className="on"><small>ASK</small><b>Intelligent Forms</b><span>Build forms that adapt to every respondent and then analyze your data for rich insights.</span><i /></div><div><small>ACT</small><b>Growth Flow <em>NEW</em></b><span>Convert and keep customers with automated segmentation and follow-ups.</span></div><div><small>LEARN</small><b>Research Flow <em>NEW</em></b><span>Make confident business decisions fast with AI-moderated studies and automated reports.</span></div></div>
-        <div className="tfh-stage"><div className="steps"><i>Branding form…</i><i>Structuring questions…</i><i>Adding logic…</i></div><Mock className="tfh-form"><div className="l"><b /><b /><b /></div><div className="r" /></Mock></div></div></Band>
+  return <div className={`tfh pk ${serif.variable}`}>
+    <HomeHero />
     <Band h={732} className="tfh-light"><div className="tfh-two"><div><small className="pur">INTELLIGENT FORMS</small><h2>Build forms at the drop of a prompt</h2><p>With over 48 million responses collected monthly, TypeformIsDead AI builds best-in-class forms in seconds. Start with a sentence, finish with a form your respondents like.</p><Link className="tfh-dark" href="/login">Explore forms</Link></div><div className="art"><span /></div></div>
       <div className="tfh-three">{[["High Response Rate", "Questions one at a time keep completion high."], ["Deeper Insights", "Ask follow-ups that adapt to every answer."], ["Advanced Analytics", "Charts, NPS and exports for every form."]].map(([t, d]) => <div key={t}><i /><b>{t}</b><span>{d}</span></div>)}</div></Band>
     <Band h={2075} className="tfh-dark2"><h2>When the form ends,<br />the flow begins…</h2>
@@ -27,6 +20,6 @@ export function TfHome() {
       <div className="cards"><div><b>SmartBug Media increased sales leads by 40% with one form</b></div><div><b>Double: Destiny Marketing drove $3.67 million in sales</b></div><div><b>Viva scaled customer engagement</b></div></div><div className="dots">•••••••••</div><Link className="tfh-ghost2" href="/login">Read all customer stories</Link>
       <div className="tfh-integ"><h3>Integrate with your tech stack</h3><div className="row"><b>Calendly</b><b>CallRail</b><b>Calendly</b><b>Marketo</b><b>slack</b><b>stripe</b></div><div className="row"><b>CallRail</b><b>Calendly</b><b>zapier</b><b>Webflow</b><b>stripe</b></div><Link className="tfh-ghost2" href="/login">View integrations</Link></div></Band>
     <Band h={487} className="tfh-cta"><h2>AI forms and automation.<br />All in TypeformIsDead.</h2><Link className="tfh-white" href="/login">Get started—it&apos;s free</Link></Band>
-    <Foot cols={FOOT} bg="#2a222b" color="#fff" minH={783} top={<div className="tfh-ftop"><Logo /></div>} legal={<><span>Contact sales</span><span>Check our commitment to data privacy</span><span>Legal</span><span>© 2026</span></>} note={`TypeformIsDead is an independent open-source project, not affiliated with or endorsed by Typeform S.L. Typeform is a trademark of its owner. Source: ${Gh("typeformisdead")} (Apache-2.0)`} />
-  </div></>;
+    <Foot linkHref="/login" cols={FOOT} bg="#2a222b" color="#fff" minH={783} top={<div className="tfh-ftop"><Logo /></div>} legal={<><span>Contact sales</span><span>Check our commitment to data privacy</span><span>Legal</span><span>© 2026</span></>} note={`TypeformIsDead is an independent open-source project, not affiliated with or endorsed by Typeform S.L. Typeform is a trademark of its owner. Source: ${Gh("typeformisdead")} (Apache-2.0)`} />
+  </div>;
 }
