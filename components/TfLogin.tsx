@@ -17,7 +17,7 @@ export function TfLogin({ config, demo, to, signup = false }: { config: Firebase
   const [mode, setMode] = useState<"signin" | "signup" | "reset">(signup ? "signup" : "signin");
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState(""), [password, setPassword] = useState(""), [busy, setBusy] = useState(false), [err, setErr] = useState(""), [note, setNote] = useState("");
-  const [slide, setSlide] = useState(0), [playing, setPlaying] = useState(true);
+  const [showEmail, setShowEmail] = useState(false), [slide, setSlide] = useState(0), [playing, setPlaying] = useState(true);
   const session = `${BP}/api/session`;
   const run = async (f: () => Promise<void>) => { setBusy(true); setErr(""); setNote(""); try { await f(); } catch (e) { setErr(authErrorMessage(e)); } finally { setBusy(false); } };
   const submit = (e: React.FormEvent) => { e.preventDefault();
@@ -29,21 +29,23 @@ export function TfLogin({ config, demo, to, signup = false }: { config: Firebase
   const title = mode === "signup" ? "Sign up" : mode === "reset" ? "Reset your password" : "Log in";
   const sub = mode === "signup" ? "Create forms, collect answers and automate follow-ups, free." : mode === "reset" ? "Enter your email and we'll send you a reset link." : "Build forms, gather responses, and automate your workflows.";
   const s = SLIDES[slide];
-  return <main className="tfl">
-    <header className="tfl-top"><Link href="/" className="tfl-logo"><Logo size={24} /></Link><div><span>Have a question? <a href="#">Contact us</a></span><button type="button" className="tfl-lang" disabled title={off}>◎ English ⌄</button></div></header>
+  const su = mode === "signup" && !showEmail;
+  return <main className={"tfl" + (mode === "signup" ? " tfl-su" : "")}>
+    <header className="tfl-top"><Link href="/" className="tfl-logo"><Logo size={24} /></Link><div><span>{mode === "signup" ? <>Already have an account? <a className="tfl-lg" href="#" onClick={e => { e.preventDefault(); setMode("signin"); setStep(1); }}>Log in</a></> : <>Have a question? <a href="#">Contact us</a></>}</span><button type="button" className="tfl-lang" disabled title={off}>◎ English ⌄</button></div></header>
     <div className="tfl-split">
       <section className="tfl-left"><div className="tfl-form">
-        <h1>{title}</h1><p>{sub}</p>
+        {mode === "signup" && <div className="tfl-sulogo"><Logo size={26} /></div>}<h1>{mode === "signup" ? "Sign up today. Start with a form, end with a conversation." : title}</h1>{mode !== "signup" && <p>{sub}</p>}
         {!config && <p role="status" className="tfl-note">Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.</p>}
         {mode !== "reset" && <>
-          <button type="button" className="tfl-oauth" disabled={busy || !config} onClick={() => run(async () => { await signInWithGoogle(config!, session); window.location.assign(to); })}>{G}Continue with Google</button>
-          <button type="button" className="tfl-oauth" disabled title={off}>{MS}Continue with Microsoft</button></>}
-        <form onSubmit={submit}>
+          <button type="button" className="tfl-oauth" disabled={busy || !config} onClick={() => run(async () => { await signInWithGoogle(config!, session); window.location.assign(to); })}>{G}{mode === "signup" ? "Sign up with Google" : "Continue with Google"}</button>
+          <button type="button" className="tfl-oauth" disabled title={off}>{MS}{mode === "signup" ? "Sign up with Microsoft" : "Continue with Microsoft"}</button></>}
+        {mode === "signup" && <div className="tfl-or">OR</div>}
+        {su ? <button type="button" className="tfl-cta tfl-suemail" onClick={() => setShowEmail(true)}>Sign up with email</button> : <form onSubmit={submit}>
           <label htmlFor="tf-email">Email</label>
           <input id="tf-email" type="email" required autoComplete="email" value={email} onChange={e => { setEmail(e.target.value); }} readOnly={step === 2 && mode !== "reset"} />
           {step === 2 && mode !== "reset" && <><label htmlFor="tf-pass">Password</label><input id="tf-pass" type="password" required minLength={6} autoFocus autoComplete={mode === "signup" ? "new-password" : "current-password"} value={password} onChange={e => setPassword(e.target.value)} /></>}
           <button className="tfl-cta" disabled={busy}>{mode === "reset" ? "Email me a reset link" : step === 1 ? "Continue with email" : mode === "signup" ? "Create account" : "Log in"}</button>
-        </form>
+        </form>}
         {mode === "signin" && step === 1 && <div className="tfl-sso"><button type="button" disabled title={off}>Log in with SSO</button> · <button type="button" onClick={() => { setMode("reset"); setStep(1); }}>Forgot password?</button></div>}
         {step === 2 && <div className="tfl-sso"><button type="button" onClick={() => { setStep(1); setPassword(""); }}>Use a different email</button></div>}
         {err && <p role="alert" className="tfl-err">{err}</p>}{note && <p role="status" className="tfl-note">{note}</p>}

@@ -1,2 +1,2 @@
-import { Marketing } from "@/components/Marketing";
-export default function Home() { return <Marketing />; }
+import { TfHome } from "@/components/TfHome";
+export default function Home() { return <TfHome />; }
