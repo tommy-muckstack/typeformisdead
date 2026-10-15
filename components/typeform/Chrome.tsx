@@ -140,8 +140,8 @@ export function NewFormPage({ onScratch, onAi, onTemplate, templates, busy }: { 
   const [goal, setGoal] = useState("");
   return <div className="tfc-new">
     <div className="tfc-new-in">
-      <p className="ai">Typeform AI</p><h1>What would you like to create?</h1>
-      <div className="glow"><div className="ta"><textarea autoFocus placeholder="Explain the goal of your form" value={goal} onChange={e => setGoal(e.target.value)} aria-label="Explain the goal of your form" />
+      <p className="ai">Create from a prompt · Free</p><h1>What would you like to create?</h1>
+      <div className="glow"><div className="ta"><textarea autoFocus placeholder="Describe a lead form, feedback survey, RSVP, or list your questions" maxLength={4000} value={goal} onChange={e => setGoal(e.target.value)} aria-label="Explain the goal of your form" />
         <div className="tools"><span>{TI.mic}</span><span>{TI.plus}</span><span>···</span><button className={goal.trim() ? "on" : ""} aria-label="Create" disabled={!goal.trim() || busy} onClick={() => onAi(goal.trim())}>{TI.play}</button></div></div></div>
       <hr />
       <div className="alt"><button disabled={busy} onClick={onScratch} data-testid="start-scratch">Start from scratch</button><button className="crm" disabled title="Not in TypeformIsDead yet">Sync to CRM <i className="hub">h</i><i className="sf">s</i></button></div>

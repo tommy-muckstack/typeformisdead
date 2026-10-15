@@ -76,7 +76,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | D07 | Forms list data and completion | differs | P1 | Any form with a response shows 100% completion regardless of views. | pending E3 |
 | D08 | Empty, loading and error states | differs | P1 | Non-OK load looks like an empty workspace; rejected fetch has no recovery UI. | pending E3 |
 | D09 | Create form screen and modal flow | unverified | P2 | [NewFormPage](../components/typeform/Chrome.tsx) exists; compare navigation, focus and cancellation. | pending E3 |
-| D10 | AI create and chat | missing | P1 | Goal text only names a blank template in Dashboard.create. Implement an actual free generation equivalent; do not imply AI where none runs. | pending E3 |
+| D10 | AI create and chat | differs | P1 | Free local prompt creation now builds lead/feedback/RSVP forms, infers types from explicit question lists, and supplies a generic editable starter for other goals. UI labels it prompt creation, not AI. Deterministic English rules are a limited alternative to a paid language model; conversational AI/chat remains missing. | pending E3 |
 | D11 | Template library and previews | differs | P2 | Four [templates](../lib/forms/templates.ts), including blank; no search/gallery preview. Recreate artwork. | pending E3 |
 | D12 | Delete form and feedback | differs | P1 | Native confirm then DELETE; failed deletion is ignored. Test only audit-owned forms. | pending E3 |
 | D13 | Duplicate form | missing | P2 | No dashboard/API duplication operation. Question duplication is separate. | pending E3 |
@@ -214,3 +214,4 @@ The owner supplied paired desktop home/login screenshots on 2026-10-15. They dem
 | Remaining product work | Not opened | Not implemented/verified yet | All unresolved rows above remain open |
 | Login screenshot correction | Local branch `fix/login-screenshot-parity` | Lint, typecheck and production build pass | Owner original/before captures committed; after/mobile browser checks pending. |
 | Home hero and CTA routing | Local branch `fix/home-screenshot-parity` | Lint, typecheck, production build and 44-link HTTP routing check pass | Owner original/before captures committed; after/mobile browser checks pending. |
+| Free prompt creation | Local branch `fix/free-prompt-creation` | Lint, typecheck, 53 unit tests, production build and local production API check pass | Replaces renaming a blank form; common goals and explicit question lists produce editable questions without a paid API. English deterministic rules, not a language model. |

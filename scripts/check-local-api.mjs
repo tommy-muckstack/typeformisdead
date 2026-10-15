@@ -36,6 +36,13 @@ try {
   assert.equal(login.status, 204);
   cookie = login.headers.getSetCookie().map(value => value.split(";")[0]).join("; ");
   assert(cookie);
+  const promptCreate = await request("/api/forms", { owner: true, method: "POST", body: JSON.stringify({ prompt: "Build a lead generation form for our design studio" }) });
+  assert.equal(promptCreate.status, 201);
+  const generated = (await promptCreate.json()).form;
+  assert(generated.questions.length > 3);
+  assert(generated.questions.some(question => question.type === "email" && question.required));
+  assert.equal((await request("/api/forms", { owner: true, method: "POST", body: JSON.stringify({ prompt: "" }) })).status, 400);
+  assert.equal((await request(`/api/forms/${generated.id}`, { owner: true, method: "DELETE" })).status, 204);
   const create = await request("/api/forms", { owner: true, method: "POST", body: JSON.stringify({ template: "blank", title: "Local parity regression" }) });
   assert.equal(create.status, 201);
   const { form } = await create.json();
@@ -61,7 +68,7 @@ try {
   assert.equal((await csv.text()).trim().split("\r\n").length, 101);
   assert.equal((await request(`/api/forms/${form.id}`, { owner: true, method: "DELETE" })).status, 204);
   assert.equal((await request(`/api/forms/${form.id}`)).status, 404);
-  console.log("Local API check passed: calendar validation, 100 concurrent responses/views, owner-only results, CSV and deletion.");
+  console.log("Local API check passed: prompt creation, calendar validation, 100 concurrent responses/views, owner-only results, CSV and deletion.");
 } finally {
   const stopped = once(server, "exit");
   server.kill("SIGTERM");

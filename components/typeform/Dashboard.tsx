@@ -11,7 +11,7 @@ export function Dashboard() {
   const [forms, setForms] = useState<Row[] | null>(null); const [picker, setPicker] = useState(false); const router = useRouter(); const [busy, setBusy] = useState(false);
   const load = useCallback(async () => { const r = await fetch(`${BP}/api/forms`); if (r.ok) setForms((await r.json()).forms); else setForms([]); }, []);
   useEffect(() => { load(); }, [load]);
-  const create = async (template: string, title?: string) => { setBusy(true); const r = await fetch(`${BP}/api/forms`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, ...(title ? { title: title.slice(0, 80) } : {}) }) }); setBusy(false); if (r.ok) router.push(`/app/forms/${(await r.json()).form.id}`); };
+  const create = async (template: string, title?: string, prompt?: string) => { setBusy(true); const r = await fetch(`${BP}/api/forms`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, ...(prompt ? { prompt } : {}), ...(title ? { title: title.slice(0, 80) } : {}) }) }); setBusy(false); if (r.ok) router.push(`/app/forms/${(await r.json()).form.id}`); };
   const del = async (f: Row) => { if (!confirm(`Delete “${f.title}” and its ${f.responses} responses?`)) return; await fetch(`${BP}/api/forms/${f.id}`, { method: "DELETE" }); load(); };
   const [banner, setBanner] = useState(true); const [sug, setSug] = useState([true, true]);
   return <div className="tfw"><header className="tfw__hd"><span className="tfw__logo"><i /><b>T</b></span><span className="tfw__acct">thomas.m.keeley <small>⌄</small></span><span className="tfw__sp" />
@@ -29,6 +29,6 @@ export function Dashboard() {
         <div data-testid="forms">{forms?.map(f => <div key={f.id} className="tfw__row"><Link href={`/app/forms/${f.id}`} className="tfw__nm"><i style={{ background: "linear-gradient(135deg,#c2652a,#e8a24c)" }} />{f.title}</Link><span>{f.responses || "-"}</span><span>{f.responses ? "100%" : "-"}</span><span>{new Date((f as any).updatedAt ?? Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span><span className="ig">⊞</span><span className="acts"><a href={`${BP}/f/${f.id}`} target="_blank" rel="noreferrer">View</a><button onClick={() => del(f)} aria-label={`Delete ${f.title}`}>···</button></span></div>)}</div>
       </main></div>
     {picker && <div className="tfc-newov" role="dialog" aria-label="New form" data-testid="new-form"><div className="tfc-newtop"><button className="crumb" onClick={() => setPicker(false)}><span aria-hidden>▤</span> Forms</button><span className="sp">›</span><b>New form</b><span className="grow" /><span className="tfb__help">?</span><span className="tfb__av">T</span></div>
-      <NewFormPage busy={busy} templates={FORM_TEMPLATES} onScratch={() => create("blank")} onTemplate={id => create(id)} onAi={g => create("blank", g)} /></div>}
+      <NewFormPage busy={busy} templates={FORM_TEMPLATES} onScratch={() => create("blank")} onTemplate={id => create(id)} onAi={goal => create("blank", undefined, goal)} /></div>}
   </div>;
 }
