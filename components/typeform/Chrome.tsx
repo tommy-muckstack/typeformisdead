@@ -16,7 +16,6 @@ export const TI = {
   target: <S c={<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></>} />,
   edit: <S s={12} c={<path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3" />} />,
   play: <S s={12} c={<path d="M7 5l12 7-12 7z" />} />,
-  gem: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a7a57" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M6 4h12l4 6-10 11L2 10z" /><path d="M2 10h20M9 4l-2 6 5 11 5-11-2-6" /></svg>,
   phone: <S s={14} c={<><rect x="7" y="3" width="10" height="18" rx="2" /><path d="M11 18h2" /></>} />,
   refresh: <S s={14} c={<path d="M20 11a8 8 0 10-2 5.5M20 4v7h-7" />} />,
   drag: <svg width="10" height="12" viewBox="0 0 10 12" fill="#777" aria-hidden="true"><circle cx="2.5" cy="2" r="1.1" /><circle cx="7.5" cy="2" r="1.1" /><circle cx="2.5" cy="6" r="1.1" /><circle cx="7.5" cy="6" r="1.1" /><circle cx="2.5" cy="10" r="1.1" /><circle cx="7.5" cy="10" r="1.1" /></svg>,
@@ -29,25 +28,24 @@ export const TI = {
   down: <S s={12} c={<path d="M12 5v14M6 13l6 6 6-6" />} />,
   arrowDown: <S s={11} c={<path d="M12 5v14M6 13l6 6 6-6" />} />,
 };
-const Gem = () => <span className="tfc-gem">{TI.gem}</span>;
 
-type Item = { label: string; type?: QType | "welcome" | "end"; pro?: boolean; tone: string; ic: string };
+type Item = { label: string; type?: QType | "welcome" | "end"; tone: string; ic: string };
 const GROUPS: { h: string; items: Item[] }[] = [
   { h: "Contact info", items: [{ label: "Contact Info", tone: "pink", ic: "◉" }, { label: "Email", type: "email", tone: "pink", ic: "✉" }, { label: "Phone Number", tone: "pink", ic: "✆" }, { label: "Address", tone: "pink", ic: "⌖" }, { label: "Website", tone: "pink", ic: "⊕" }] },
   { h: "Choice", items: [{ label: "Multiple Choice", type: "choice", tone: "violet", ic: "☰" }, { label: "Dropdown", tone: "violet", ic: "⌄" }, { label: "Picture Choice", tone: "violet", ic: "▣" }, { label: "Yes/No", type: "yes_no", tone: "violet", ic: "⊘" }, { label: "Legal", tone: "violet", ic: "⚖" }, { label: "Checkbox", tone: "violet", ic: "☑" }] },
   { h: "Rating & ranking", items: [{ label: "Net Promoter Score®", type: "scale", tone: "green", ic: "◔" }, { label: "Opinion Scale", type: "scale", tone: "green", ic: "▥" }, { label: "Rating", type: "rating", tone: "green", ic: "☆" }, { label: "Ranking", tone: "green", ic: "≣" }, { label: "Matrix", tone: "green", ic: "▦" }] },
-  { h: "Text & Video", items: [{ label: "Long Text", type: "long_text", tone: "blue", ic: "☰" }, { label: "Short Text", type: "short_text", tone: "blue", ic: "▭" }, { label: "Video and Audio", pro: true, tone: "blue", ic: "▶" }, { label: "Clarify with AI", pro: true, tone: "blue", ic: "✦" }, { label: "FAQ with AI", pro: true, tone: "blue", ic: "?" }] },
-  { h: "Other", items: [{ label: "Number", type: "number", tone: "yellow", ic: "#" }, { label: "Date", type: "date", tone: "yellow", ic: "▤" }, { label: "Signature", pro: true, tone: "yellow", ic: "✎" }, { label: "Payment", pro: true, tone: "yellow", ic: "▭" }, { label: "File Upload", pro: true, tone: "yellow", ic: "⇪" }, { label: "Scheduler", tone: "yellow", ic: "▥" }] },
-  { h: " ", items: [{ label: "Welcome Screen", type: "welcome", tone: "gray", ic: "▯" }, { label: "Partial Submit Point", pro: true, tone: "gray", ic: "⏷" }, { label: "Statement", type: "statement", tone: "gray", ic: "❝" }, { label: "Question Group", tone: "gray", ic: "▤" }, { label: "End Screen", type: "end", tone: "gray", ic: "▢" }, { label: "Redirect to URL", pro: true, tone: "gray", ic: "↪" }] },
+  { h: "Text & Video", items: [{ label: "Long Text", type: "long_text", tone: "blue", ic: "☰" }, { label: "Short Text", type: "short_text", tone: "blue", ic: "▭" }, { label: "Video and Audio", tone: "blue", ic: "▶" }, { label: "Clarify with AI", tone: "blue", ic: "✦" }, { label: "FAQ with AI", tone: "blue", ic: "?" }] },
+  { h: "Other", items: [{ label: "Number", type: "number", tone: "yellow", ic: "#" }, { label: "Date", type: "date", tone: "yellow", ic: "▤" }, { label: "Signature", tone: "yellow", ic: "✎" }, { label: "Payment", tone: "yellow", ic: "▭" }, { label: "File Upload", tone: "yellow", ic: "⇪" }, { label: "Scheduler", tone: "yellow", ic: "▥" }] },
+  { h: " ", items: [{ label: "Welcome Screen", type: "welcome", tone: "gray", ic: "▯" }, { label: "Partial Submit Point", tone: "gray", ic: "⏷" }, { label: "Statement", type: "statement", tone: "gray", ic: "❝" }, { label: "Question Group", tone: "gray", ic: "▤" }, { label: "End Screen", type: "end", tone: "gray", ic: "▢" }, { label: "Redirect to URL", tone: "gray", ic: "↪" }] },
 ];
-const REC: Item[] = [{ label: "Video and Audio", pro: true, tone: "blue", ic: "▶" }, { label: "Short Text", type: "short_text", tone: "blue", ic: "▭" }, { label: "Multiple Choice", type: "choice", tone: "violet", ic: "☰" }];
+const REC: Item[] = [{ label: "Video and Audio", tone: "blue", ic: "▶" }, { label: "Short Text", type: "short_text", tone: "blue", ic: "▭" }, { label: "Multiple Choice", type: "choice", tone: "violet", ic: "☰" }];
 
 export function AddContentModal({ onClose, onPick }: { onClose: () => void; onPick: (t: QType | "welcome" | "end") => void }) {
   const [q, setQ] = useState(""); const [tab, setTab] = useState("Add form elements"); const [note, setNote] = useState("");
   useEffect(() => { const f = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); }; window.addEventListener("keydown", f); return () => window.removeEventListener("keydown", f); }, [onClose]);
   const pick = (it: Item) => { if (it.type) { onPick(it.type); onClose(); } else setNote(`${it.label} isn't in TypeformIsDead yet. It's open source, so you can add it.`); };
   const f = (it: Item) => it.label.toLowerCase().includes(q.toLowerCase());
-  const row = (it: Item, key?: string) => <button key={key ?? it.label} className={"tfc-el" + (it.type ? "" : " na")} onClick={() => pick(it)}><i className={"tfc-ic " + it.tone}>{it.ic}</i><span>{it.label}</span>{it.pro && <Gem />}</button>;
+  const row = (it: Item, key?: string) => <button key={key ?? it.label} className={"tfc-el" + (it.type ? "" : " na")} onClick={() => pick(it)}><i className={"tfc-ic " + it.tone}>{it.ic}</i><span>{it.label}</span></button>;
   return <div className="tfc-scrim" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
     <div className="tfc-add" role="dialog" aria-label="Add content" data-testid="add-content">
       <header>{["Add form elements", "Import questions", "Create with AI"].map(t => <button key={t} className={tab === t ? "on" : ""} onClick={() => { setTab(t); if (t !== "Add form elements") setNote(`${t} isn't in TypeformIsDead yet.`); else setNote(""); }}>{t}</button>)}<button className="x" aria-label="Close" onClick={onClose}>{TI.x}</button></header>
@@ -57,7 +55,7 @@ export function AddContentModal({ onClose, onPick }: { onClose: () => void; onPi
           <h5>Recommended</h5>{REC.filter(f).map(it => row(it, "rec-" + it.label))}
           <h5>Connect to apps</h5>
           <button className="tfc-el na" onClick={() => setNote("Integrations aren't in TypeformIsDead yet.")}><i className="tfc-ic app hub">h</i><span>Hubspot</span></button>
-          <button className="tfc-el na" onClick={() => setNote("Integrations aren't in TypeformIsDead yet.")}><i className="tfc-ic app sf">s</i><span>Salesforce</span><Gem /></button>
+          <button className="tfc-el na" onClick={() => setNote("Integrations aren't in TypeformIsDead yet.")}><i className="tfc-ic app sf">s</i><span>Salesforce</span></button>
           <button className="tfc-el na" onClick={() => setNote("Integrations aren't in TypeformIsDead yet.")}><i className="tfc-ic app">⊞</i><span>Browse all apps</span></button>
         </aside>
         <div className="tfc-cols">{GROUPS.map(g => { const items = g.items.filter(f); return <div key={g.h} className="tfc-grp"><h5>{g.h}</h5>{items.map(it => row(it))}</div>; })}</div>
@@ -73,7 +71,7 @@ export function DesignPopover({ onClose }: { onClose: () => void }) {
     <header><span className="drag">{TI.drag}</span><b>Design</b><button aria-label="Close design" onClick={onClose}>{TI.x}</button></header>
     <div className="tfc-dtabs">{(["My themes", "Gallery"] as const).map(t => <button key={t} className={tab === t ? "on" : ""} onClick={() => setTab(t)}>{t}</button>)}</div>
     {tab === "My themes" ? <>
-      <div className="tfc-drow"><span>Brand kit themes <Gem /></span><button className="tfc-mini">Manage</button></div>
+      <div className="tfc-drow"><span>Brand kit themes</span><button className="tfc-mini">Manage</button></div>
       <div className="tfc-drow"><span>My themes</span><button className="tfc-plus" aria-label="New theme">{TI.plus}</button></div>
     </> : <p className="tfc-dnote">Themes from the gallery aren&apos;t in TypeformIsDead yet.</p>}
   </div>;
@@ -104,7 +102,7 @@ export function SharePage({ link, published, onPublished, onCopy, copied, title,
     </div>
     <aside className="tfc-sr">
       <p className="lab">Share in:</p><div className="soc">{["f", "in", "𝕏", "◈", "✳"].map(s => <span key={s}>{s}</span>)}</div>
-      <p className="h">Link preview <Gem /></p>
+      <p className="h">Link preview</p>
       <label>Thumbnail {TI.help}</label><button className="up">Upload</button>
       <label>Title</label><input className="fld" value={ptitle} onChange={e => setPtitle(e.target.value)} aria-label="Link preview title" />
       <label>Description {TI.help}</label><textarea className="fld ta" value={desc} onChange={e => setDesc(e.target.value)} aria-label="Link preview description" />
@@ -121,7 +119,7 @@ export function ResultsShell({ sub, setSub, stats, children }: { sub: ResultsSub
   const tabs: [ResultsSub | "smart", string][] = [["smart", "Smart Insights"], ["performance", "Form performance"], ["summary", "Response summary"], ["responses", "Responses"]];
   const [note, setNote] = useState(false);
   return <div className="tfc-res" data-testid="results">
-    <nav className="tfc-rtabs">{tabs.map(([k, l]) => <button key={k} className={sub === k ? "on" : ""} onClick={() => k === "smart" ? setNote(n => !n) : (setNote(false), setSub(k))}>{l}{k === "smart" && <Gem />}</button>)}</nav>
+    <nav className="tfc-rtabs">{tabs.map(([k, l]) => <button key={k} className={sub === k ? "on" : ""} onClick={() => k === "smart" ? setNote(n => !n) : (setNote(false), setSub(k))}>{l}</button>)}</nav>
     <div className="tfc-rbody">
       {note && <p className="tfc-dnote wide">Smart Insights (AI summaries of your responses) aren&apos;t in TypeformIsDead. Paste the Responses table into your own AI instead.</p>}
       {sub === "performance" ? <div className="tfc-perf">

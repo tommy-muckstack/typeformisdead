@@ -67,8 +67,8 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 
 | ID | Screen / feature | Status | Severity | Source evidence / next comparison | Screenshots |
 | --- | --- | --- | --- | --- | --- |
-| D01 | Header account identity/avatar | differs | P1 | [Dashboard](../components/typeform/Dashboard.tsx) hard-codes an account name and T avatar rather than session user. | pending E3 |
-| D02 | Free-response banner and quotas | differs | P1 | Banner advertises ten free responses and upgrade actions; sidebar count always zero. Must reflect actual usage and entirely free access. | pending E3 |
+| D01 | Header account identity/avatar | differs | P1 | [Dashboard](../components/typeform/Dashboard.tsx) now receives the current session display name/initial. Owner screenshot guided font sizes, spacing and Google Material icons; rendered comparison remains pending. | pending E3 |
+| D02 | Free-response banner and quotas | differs | P1 | Removed the ten-response banner, response-limit increase button and quota meter. Sidebar now sums actual loaded responses with no paid-plan denominator; paid diamond badges removed from builder/design/share/results. EX1 applies. | pending E3 |
 | D03 | Forms/Contacts/Automations/Insights/Pages/Research tabs | missing | P1 | All except displayed Forms are anchors without destinations. Paid functionality remains in scope. | pending E3 |
 | D04 | Workspaces, folders and invitations | missing | P2 | Workspace creation, private collapse and invite are decorative; no collaboration model. | pending E3 |
 | D05 | Search, sort, list/grid views | missing | P2 | Controls are static divs/spans. | pending E3 |
@@ -151,7 +151,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | R08 | Unpublished form message | differs | P1 | [Public route](../app/f/[id]/page.tsx) calls generic notFound for both missing and unpublished forms. | pending E3 |
 | R09 | Server branching and response validation | unverified | P1 | [validateSubmission](../lib/forms/logic.ts) evaluates visited path and rejects unknown question IDs; verify stored answers after backtracking. | pending E3 |
 | R10 | Durable and concurrent response storage | unverified | P0 | Reproduced lost updates and fixed in PR #3 with separate response records and atomic local-file replacement. 100 simultaneous submissions retained through the real HTTP API and Firestore emulator; legacy reads and isolated form-data deletion covered (E13/E14). Browser comparison and real cloud configuration remain unverified. | pending E3 |
-| R11 | Response limits | differs | P1 | Removed the artificial 5,000-response storage cap; regression retains response 5,001. UI still advertises ten responses and needs correction. Real disk/provider capacity is finite; no promise of unlimited hosted storage. | pending E3 |
+| R11 | Response limits | differs | P1 | Removed the artificial 5,000-response storage cap; regression retains response 5,001. Removed the UI ten-response banner, quota meter and upgrade actions; sidebar shows actual usage. Real disk/provider capacity is finite; no promise of unlimited hosted storage. | pending E3 |
 | R12 | Views, starts and step timing | differs | P1 | Concurrent view losses fixed with independent events; real HTTP check counts all 100 views. No starts, device or per-step timing instrumentation yet. | pending E3 |
 | R13 | Retry/offline behavior | unverified | P1 | [FillForm](../components/typeform/FillForm.tsx) catches submission errors; test retained answers and duplicate prevention after uncertain network outcome. | pending E3 |
 
@@ -177,7 +177,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 
 | ID | Exception / decision | State |
 | --- | --- | --- |
-| EX1 | Product subscription prices, upsells, payment gates and paid-tier quotas are replaced by free access. Paid features themselves stay in scope. | Explicitly authorized by owner. Existing banners still need correction. |
+| EX1 | Product subscription prices, upsells, payment gates and paid-tier quotas are replaced by free access. Paid features themselves stay in scope. | Explicitly authorized by owner. Ten-response banner, quota meter, upgrade actions and premium badges have been removed from the workspace/product UI. |
 | EX2 | Independent TypeformIsDead identity, original recreated artwork, OFL substitute fonts and existing disclaimer. | Required by owner. Visual approximation still needs review. |
 | EX3 | Pricing and other marketing pages beyond home/login. | Explicitly out of scope. No pricing PR planned. |
 | EX4 | All home navigation and CTAs link to login, including Platform/Solutions/Resources/Pricing and the mobile menu. | Explicit owner clarification on 2026-10-15; replaces original mega-menu navigation. |
@@ -219,5 +219,6 @@ The owner supplied paired desktop home/login screenshots on 2026-10-15. They dem
 | Free prompt creation | [PR #6](https://github.com/tommy-muckstack/typeformisdead/pull/6) | Lint, typecheck, 53 unit tests, production build and local production API check pass | Replaces renaming a blank form; common goals and explicit question lists produce editable questions without a paid API. English deterministic rules, not a language model. |
 | Home integrations promotion removal | Local branch `fix/remove-home-integrations` | Lint, typecheck, production build and local HTTP checks pass | Removes the requested panel, its CSS and the shared fixed minimum height. Browser rendering remains unverified. |
 | Email and Google sign-in only | Local branch `fix/email-google-only` | Lint, typecheck, production build and login/signup HTTP checks pass | Removes Microsoft/SSO options from login/signup and their unused styles. |
+| Workspace spacing, Google icons and free access | Local branch `fix/workspace-free-layout` | Lint, typecheck, build, authenticated HTTP markup and local API regression pass | [Owner comparison and measurement notes](parity/workspace-reference/README.md); real browser after-capture remains blocked. |
 
 PRs #4–#6 are published as a stack and all three initial Vercel deployment checks succeeded. The [combined preview](https://typeformisdead-git-fix-free-prompt-creation-muckstack-projects.vercel.app/typeformisdead) contains the home, login and free prompt changes. On 2026-10-15, the owner explicitly instructed pushing and merging all three changes into main despite the documented browser limitation. Actual rendered desktop/mobile comparison is still unavailable and remains an outstanding check. A successful build/deployment is not visual parity evidence.

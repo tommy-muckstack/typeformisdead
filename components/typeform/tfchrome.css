@@ -1,5 +1,5 @@
 /* Typeform builder chrome, measured from logged-in captures at 1920px. */
-.tfc-gem{display:inline-flex;margin-left:auto}
+
 .tfc-scrim{position:fixed;inset:0;z-index:300;background:rgba(8,0,14,.6);display:flex;align-items:center;justify-content:center;font-family:var(--ids-font-sans);color:#262627}
 .tfc-add{width:960px;max-width:calc(100vw - 24px);height:688px;max-height:calc(100vh - 24px);background:#fff;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden;position:relative}
 .tfc-add header{height:56px;background:#f5f5f5;display:flex;align-items:center;gap:8px;padding:0 14px 0 31px;flex:none}
@@ -47,12 +47,12 @@
 .tfc-code{background:#262627;color:#fff;padding:14px;border-radius:10px;margin:18px 4px;white-space:pre-wrap;word-break:break-all;font-size:12.5px}
 .tfc-resl{margin:10px 0 0}.tfc-linkbtn{border:0;background:none;color:#0a7a57;cursor:pointer;font:500 12.5px var(--ids-font-sans);padding:0}
 .tfc-sr{background:#f5f5f5;border-radius:10px;padding:14px 14px;font-size:12px;overflow:auto}.tfc-sr .lab{margin:0 0 10px;font-weight:600}.tfc-sr .soc{display:flex;gap:8px;margin-bottom:22px}.tfc-sr .soc span{width:30px;height:30px;border-radius:6px;background:#e8e8e8;display:grid;place-items:center;color:#666;font-size:12px;font-weight:700}
-.tfc-sr .h{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-weight:600}.tfc-sr .h .tfc-gem{margin-left:0}.tfc-sr label{display:flex;align-items:center;gap:6px;margin:10px 0 6px;color:#262627}.tfc-sr .up{border:0;background:#e4e4e4;border-radius:5px;height:22px;padding:0 8px;font-size:10px;cursor:pointer}
+.tfc-sr .h{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-weight:600}.tfc-sr .h .tfc-sr label{display:flex;align-items:center;gap:6px;margin:10px 0 6px;color:#262627}.tfc-sr .up{border:0;background:#e4e4e4;border-radius:5px;height:22px;padding:0 8px;font-size:10px;cursor:pointer}
 .tfc-sr .fld{width:100%;border:0;background:#ececec;border-radius:6px;height:32px;padding:0 10px;font:400 12px var(--ids-font-sans);color:#555}.tfc-sr .ta{height:110px;padding:10px;resize:none;line-height:1.5}
 .tfc-sr .sw{display:flex;align-items:center;justify-content:space-between;margin-top:16px}.tfc-sr .sw span{display:flex;gap:6px;align-items:center}.tfc-sr .sw button{width:30px;height:16px;border-radius:8px;border:0;background:#d0d0d0;position:relative;cursor:pointer}.tfc-sr .sw button i{position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .15s}.tfc-sr .sw button.on{background:#0a7a57}.tfc-sr .sw button.on i{left:16px}
 /* results */
 .tfc-res{flex:1;min-height:0;display:flex;flex-direction:column;padding:0 8px 8px;background:#fff}
-.tfc-rtabs{height:62px;background:#f5f5f5;border-radius:10px 10px 0 0;display:flex;align-items:flex-end;gap:26px;padding:0 30px;border-bottom:1px solid #e6e6e6}.tfc-rtabs button{border:0;background:none;padding:0 0 14px;font:400 12.5px var(--ids-font-sans);color:#262627;cursor:pointer;display:flex;gap:8px;align-items:center;border-bottom:2px solid transparent;margin-bottom:-1px}.tfc-rtabs .on{border-color:#262627;font-weight:500}.tfc-rtabs .tfc-gem{margin-left:0}
+.tfc-rtabs{height:62px;background:#f5f5f5;border-radius:10px 10px 0 0;display:flex;align-items:flex-end;gap:26px;padding:0 30px;border-bottom:1px solid #e6e6e6}.tfc-rtabs button{border:0;background:none;padding:0 0 14px;font:400 12.5px var(--ids-font-sans);color:#262627;cursor:pointer;display:flex;gap:8px;align-items:center;border-bottom:2px solid transparent;margin-bottom:-1px}.tfc-rtabs .on{border-color:#262627;font-weight:500}
 .tfc-rbody{flex:1;min-height:0;overflow:auto;background:#f9f9f9;border-radius:0 0 10px 10px;padding:24px}
 .tfc-perf{width:min(1190px,100%);margin:0 auto;padding-top:14px}.tfc-perf h2{margin:0;font-size:25px;font-weight:400;letter-spacing:-.01em}.tfc-perf .sub{margin:8px 0 18px;color:#666;font-size:14px}.tfc-perf hr{border:0;border-top:1px solid #e6e6e6;margin:0 0 26px}
 .tfc-filters{display:flex;gap:8px;margin-bottom:34px}.tfc-filters button{display:flex;align-items:center;gap:8px;height:32px;border:1px solid #dedede;border-radius:8px;background:#fff;padding:0 12px;font:400 12px var(--ids-font-sans);cursor:pointer}.tfc-filters .dev{min-width:136px;justify-content:flex-start}.tfc-filters .dev span{margin-left:auto}
