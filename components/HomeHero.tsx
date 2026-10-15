@@ -12,8 +12,8 @@ function Brand() {
 export function HomeHero() {
   const [announcement, setAnnouncement] = useState(true);
   return <>
-    {announcement && <div className="tfh-banner"><span>Free, open-source forms. Create, share, and collect responses with TypeformIsDead.</span><Link href="/login">Try it now</Link><button type="button" aria-label="Dismiss announcement" onClick={() => setAnnouncement(false)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19 19 5" /></svg></button></div>}
-    <header className="tfh-nav">
+    {announcement && <div className="tfh-banner"><span>Free, open-source forms. Create, share, and collect responses with TypeformIsDead.</span><Link href="/login" data-website-cta="announcement">Try it now</Link><button type="button" aria-label="Dismiss announcement" onClick={() => setAnnouncement(false)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19 19 5" /></svg></button></div>}
+    <header className="tfh-nav" data-website-cta="navigation">
       <Link href="/login" className="tfh-brand-link" aria-label="Get started with TypeformIsDead"><Brand /></Link>
       <nav aria-label="Main navigation">{["Platform", "Solutions", "Resources", "Pricing"].map((label, index) => <Link href="/login" key={label}>{label}{index < 3 && <svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>}</Link>)}</nav>
       <div className="tfh-nav-actions"><Link href="/login" className="tfh-login">Log in</Link><Link href="/login" className="tfh-contact">Contact sales</Link><Link href="/login" className="tfh-signup">Sign up</Link></div>
@@ -22,9 +22,9 @@ export function HomeHero() {
     <section className="tfh-hero" aria-labelledby="home-title">
       <div className="tfh-hin"><h1 id="home-title">Build <span>a lead gen form</span><br />at the drop of a prompt</h1>
         <p>Create conversational forms, collect responses, and explore your results.<br className="tfh-desktop-break" /> Free and open source, from your first question to your next insight.</p>
-        <Link className="tfh-start" href="/login">Get started — it&apos;s free</Link>
+        <Link className="tfh-start" href="/login" data-website-cta="hero">Get started — it&apos;s free</Link>
       </div>
-      <div className="tfh-previews" aria-label="Example conversational forms">
+      <div data-website-cta="example" className="tfh-previews" aria-label="Example conversational forms">
         <Link href="/login" className="tfh-preview tfh-preview-left" aria-label="Create a contact form"><span className="tfh-sample-brand">YOUR TEAM</span><h2><small>1</small> First, tell us about you. *</h2><span>What&apos;s your full name?*</span><p className="tfh-sample-answer">Type your answer here…</p><span className="tfh-sample-ok">OK ✓</span></Link>
         <Link href="/login" className="tfh-preview tfh-preview-right" aria-label="Create a feedback form"><span className="tfh-sample-brand">YOUR FEEDBACK</span><h2>How was your recent experience?*</h2><div className="tfh-sample-scale">{[1, 2, 3, 4, 5].map(value => <span key={value}>{value}</span>)}</div></Link>
         <Link href="/login" className="tfh-preview tfh-preview-main" aria-label="Create a form like this example">
