@@ -3,6 +3,16 @@ import type { Answers, AnswerValue, Form, Jump, Question } from "./types";
 export const TYPE_LABELS: Record<string, string> = { short_text: "Short text", long_text: "Long text", email: "Email", number: "Number", choice: "Multiple choice", yes_no: "Yes / No", rating: "Rating", scale: "Opinion scale", date: "Date", statement: "Statement" };
 export const isAnswered = (v: AnswerValue | undefined) => v !== undefined && v !== null && !(typeof v === "string" && !v.trim()) && !(Array.isArray(v) && !v.length);
 
+/** Strict calendar dates: Date.parse alone silently rolls February 30 into March. */
+function isCalendarDate(value: unknown): boolean {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  if (year < 1 || month < 1 || month > 12 || day < 1) return false;
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return day <= days[month - 1];
+}
+
 /** Validate one answer. Returns an error message or null. Unanswered optional questions are fine. */
 export function validateAnswer(q: Question, v: AnswerValue | undefined): string | null {
   if (q.type === "statement") return null;
@@ -14,7 +24,7 @@ export function validateAnswer(q: Question, v: AnswerValue | undefined): string 
     case "yes_no": return typeof v === "boolean" ? null : "Choose yes or no";
     case "rating": return typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= (q.max ?? 5) ? null : "Choose a rating";
     case "scale": return typeof v === "number" && Number.isInteger(v) && v >= 0 && v <= 10 ? null : "Choose a number from 0 to 10";
-    case "date": return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v)) ? null : "Enter a valid date";
+    case "date": return isCalendarDate(v) ? null : "Enter a valid date";
     case "choice": {
       const list = Array.isArray(v) ? v : typeof v === "string" ? [v] : null; if (!list) return "Choose an option";
       if (!q.multiple && list.length > 1) return "Choose only one";

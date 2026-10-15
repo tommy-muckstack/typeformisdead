@@ -89,7 +89,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | B08 | Yes/no | unverified | P2 | Implemented; verify Y/N, radio grouping, selection and required state. | pending E3 |
 | B09 | Rating | unverified | P2 | Only stars with 3–10 maximum; compare icons, ranges, labels and keyboard. | pending E3 |
 | B10 | Opinion scale and NPS | differs | P2 | Both menu items create the same scale type; range fixed 0–10 with recommendation labels; all scale results calculate NPS. | pending E3 |
-| B11 | Date | differs | P2 | [validateAnswer](../lib/forms/logic.ts) accepts Date.parse-normalized impossible dates such as February 30. Native widget and date-format settings unverified. | pending E3 |
+| B11 | Date | unverified | P2 | Calendar validation fixed on `fix/respondent-date-validation`: impossible dates rejected in shared client/server validation, leap centuries and years 0001–0099 handled. Twenty regression cases pass. Native widget/date-format settings and original comparison remain unverified. | pending E3 |
 | B12 | Statement | unverified | P2 | Implemented with button text; compare layout, navigation and semantics. | pending E3 |
 | B13 | Contact info | missing | P2 | Add-content item has no type; no schema/player support. | pending E3 |
 | B14 | Phone number | missing | P2 | No type, country selector or validation. | pending E3 |
@@ -198,4 +198,5 @@ Recommended order: restore verification → home/login → dashboard/free-access
 | Area | PR | Validation | Evidence |
 | --- | --- | --- | --- |
 | Baseline report, public capture utility and lint gate | Local branch `qa/parity-baseline`; not opened | Lint, typecheck, 19 unit tests, build and capture-script syntax pass (E11). One existing image lint advisory. | Source audit only; no paired screenshots. Tooling/JSX escaping changes preserve rendered text. |
+| Respondent calendar-date validation | Local branch `fix/respondent-date-validation`; not opened | Lint, typecheck, 39 unit tests and production build pass | Twenty new invalid/valid/optional date cases exercise both answer and submission validation; browser captures pending. |
 | Product fixes | Not opened | Not implemented/verified yet | All unresolved rows above remain open |
