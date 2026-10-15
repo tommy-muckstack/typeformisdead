@@ -3,6 +3,8 @@ import { useState } from "react";
 import Link from "next/link";
 import type { FirebaseClientConfig } from "@/lib/isdead-auth/config";
 import { signInWithEmail, signUpWithEmail, signInWithGoogle, resetPassword, authErrorMessage } from "@/lib/isdead-auth/client";
+import { trackWebsite } from "@/lib/analytics/client";
+import type { WebsiteProperties } from "@/lib/analytics/schema";
 import { BP } from "@/lib/basepath";
 import { Logo } from "@/components/Logo";
 import { LoginShowcase } from "./LoginShowcase";
@@ -15,12 +17,12 @@ export function TfLogin({ config, demo, to, signup = false }: { config: Firebase
   const [email, setEmail] = useState(""), [password, setPassword] = useState(""), [busy, setBusy] = useState(false), [err, setErr] = useState(""), [note, setNote] = useState("");
   const [showEmail, setShowEmail] = useState(false);
   const session = `${BP}/api/session`;
-  const run = async (f: () => Promise<void>) => { setBusy(true); setErr(""); setNote(""); try { await f(); } catch (e) { setErr(authErrorMessage(e)); } finally { setBusy(false); } };
+  const run = async (f: () => Promise<void>, context?: Pick<WebsiteProperties, "method" | "flow">, onSuccess?: () => void) => { setBusy(true); setErr(""); setNote(""); if (context) trackWebsite("website_auth_started", context); try { await f(); if (context) trackWebsite("website_auth_completed", context); onSuccess?.(); } catch (e) { if (context) trackWebsite("website_auth_failed", context); setErr(authErrorMessage(e)); } finally { setBusy(false); } };
   const submit = (e: React.FormEvent) => { e.preventDefault();
     if (!config) { setErr("Sign-in isn't configured on this deployment yet."); return; }
-    if (mode === "reset") return run(async () => { await resetPassword(config, email); setNote("If that email has an account, a reset link is on its way."); setMode("signin"); setStep(1); });
+    if (mode === "reset") return run(async () => { await resetPassword(config, email); setNote("If that email has an account, a reset link is on its way."); setMode("signin"); setStep(1); }, { method: "email", flow: "password_reset" });
     if (step === 1) { setStep(2); return; }
-    run(async () => { if (mode === "signup") await signUpWithEmail(config, session, email, password); else await signInWithEmail(config, session, email, password); window.location.assign(to); }); };
+    run(async () => { if (mode === "signup") await signUpWithEmail(config, session, email, password); else await signInWithEmail(config, session, email, password); }, { method: "email", flow: mode === "signup" ? "signup" : "login" }, () => window.location.assign(to)); };
   const off = "Not available yet in the open-source version";
   const title = mode === "signup" ? "Sign up" : mode === "reset" ? "Reset your password" : "Log in";
   const sub = mode === "signup" ? "Create forms, collect answers and automate follow-ups, free." : mode === "reset" ? "Enter your email and we'll send you a reset link." : "Build forms, gather responses, and automate your workflows.";
@@ -32,7 +34,7 @@ export function TfLogin({ config, demo, to, signup = false }: { config: Firebase
         {mode === "signup" && <div className="tfl-sulogo"><Logo size={26} /></div>}<h1>{mode === "signup" ? "Sign up today. Start with a form, end with a conversation." : title}</h1>{mode !== "signup" && <p className="tfl-description">{sub}</p>}
         {!config && <p role="status" className="tfl-note">Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.</p>}
         {mode !== "reset" && (
-          <button type="button" className="tfl-oauth" disabled={busy || !config} onClick={() => run(async () => { await signInWithGoogle(config!, session); window.location.assign(to); })}>{G}{mode === "signup" ? "Sign up with Google" : "Continue with Google"}</button>
+          <button type="button" className="tfl-oauth" disabled={busy || !config} onClick={() => run(async () => { await signInWithGoogle(config!, session); }, { method: "google", flow: mode === "signup" ? "signup" : "login" }, () => window.location.assign(to))}>{G}{mode === "signup" ? "Sign up with Google" : "Continue with Google"}</button>
         )}
         {mode === "signup" && <div className="tfl-or">OR</div>}
         {su ? <button type="button" className="tfl-cta tfl-suemail" onClick={() => setShowEmail(true)}>Sign up with email</button> : <form onSubmit={submit}>

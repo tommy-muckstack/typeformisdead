@@ -20,6 +20,9 @@ Free, open-source Typeform alternative. Part of the [IsDead series](https://your
 ## Auth
 Shared Firebase project `yourappisdead` (email/password + Google), helpers in `lib/isdead-auth` (vendored from `isdead-design/auth`). The session cookie `isdead_session` has path `/`, so one sign-in covers every IsDead app. Env: `NEXT_PUBLIC_FIREBASE_*`, `FIREBASE_SERVICE_ACCOUNT_JSON`. Without them, `/login` shows "Sign-in not configured". The single demo account ("Use the demo account") is available outside production or with `DEMO_MODE=1`.
 
+## Website analytics
+Production uses PostHog project 666931 in the US region. See [the shared website taxonomy and setup guide](docs/ANALYTICS.md) for events, privacy filtering and adding other IsDead sub-apps. Local and preview tracking are disabled by default.
+
 ## Develop
 ```
 npm install

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Form } from "@/lib/forms/types";
 import { FORM_TEMPLATES } from "@/lib/forms/templates";
+import { trackWebsite } from "@/lib/analytics/client";
 import { BP } from "@/lib/basepath";
 import { NewFormPage } from "./Chrome";
 import { MaterialIcon as Icon, type MaterialIconName } from "./MaterialIcon";
@@ -21,8 +22,8 @@ export function Dashboard({ displayName = "My account" }: { displayName?: string
   const router = useRouter();
   const load = useCallback(async () => { const r = await fetch(`${BP}/api/forms`); if (r.ok) setForms((await r.json()).forms); else setForms([]); }, []);
   useEffect(() => { load(); }, [load]);
-  const create = async (template: string, title?: string, prompt?: string) => { setBusy(true); const r = await fetch(`${BP}/api/forms`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, ...(prompt ? { prompt } : {}), ...(title ? { title: title.slice(0, 80) } : {}) }) }); setBusy(false); if (r.ok) router.push(`/app/forms/${(await r.json()).form.id}`); };
-  const del = async (f: Row) => { if (!confirm(`Delete “${f.title}” and its ${f.responses} responses?`)) return; await fetch(`${BP}/api/forms/${f.id}`, { method: "DELETE" }); load(); };
+  const create = async (template: string, title?: string, prompt?: string) => { setBusy(true); const r = await fetch(`${BP}/api/forms`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, ...(prompt ? { prompt } : {}), ...(title ? { title: title.slice(0, 80) } : {}) }) }); setBusy(false); if (r.ok) { const created = (await r.json()).form; trackWebsite("website_form_created", { creation_method: prompt ? "prompt" : template === "blank" ? "blank" : "template", question_count: created.questions.length }); router.push(`/app/forms/${created.id}`); } };
+  const del = async (f: Row) => { if (!confirm(`Delete “${f.title}” and its ${f.responses} responses?`)) return; const response = await fetch(`${BP}/api/forms/${f.id}`, { method: "DELETE" }); if (response.ok) trackWebsite("website_form_deleted"); load(); };
   const initial = displayName.trim().charAt(0).toUpperCase() || "T";
   return <div className="tfw">
     <header className="tfw__hd">
