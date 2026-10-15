@@ -59,7 +59,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | A03 | Signup and email verification | unverified | P1 | Signup mode exists; disposable account creation has not run. Required for product audit. | pending E3 |
 | A04 | Forgot password and recovery messages | unverified | P1 | Reset path exists. Test only a disposable address; do not complete a user password change. | pending E3 |
 | A05 | Google button and logo | unverified | P2 | Inline SVG and custom button in TfLogin; compare official button artwork/specification and clone-only behavior. Never use original Google sign-in. | pending E3 |
-| A06 | Microsoft and SSO capability | missing | P2 | Buttons disabled unconditionally. These remain feature work, not paid-plan exceptions. Do not change secrets as part of this audit. | pending E3 |
+| A06 | Microsoft and SSO capability | differs | P2 | Intentionally removed from login/signup at the owner's request. Email and Google are the only supported sign-in providers (EX6). | pending E3 |
 | A07 | Email/password validation and error states | unverified | P2 | Browser-native required/email checks and Firebase errors exist; compare copy, placement, field focus and retry. | pending E3 |
 | A08 | Login carousel, language, contact links | differs | P2 | Carousel now rotates with working previous/next/dots/pause and reduced-motion support; contact links to project support. Language selection remains unavailable. Browser interaction verification pending. | [Reference](parity/login-reference/README.md) |
 
@@ -182,6 +182,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | EX3 | Pricing and other marketing pages beyond home/login. | Explicitly out of scope. No pricing PR planned. |
 | EX4 | All home navigation and CTAs link to login, including Platform/Solutions/Resources/Pricing and the mobile menu. | Explicit owner clarification on 2026-10-15; replaces original mega-menu navigation. |
 | EX5 | Omit the home “Integrate with your tech stack” promotion and its logo rows/CTA. | Explicit owner request on 2026-10-15. Shared section height and obsolete CSS removed so no reserved blank space remains. |
+| EX6 | Support email and Google sign-in only; remove Microsoft and SSO options. | Explicit owner request on 2026-10-15. Existing email, signup and password-reset handlers retained. |
 | DEC1 | Payment question functionality vs. original instruction not to change payment behavior. | Human scope decision needed before implementation. No payment integration changes made. |
 | DEC2 | Hosted AI/video/storage/integrations with real operating costs. | Implement free/local alternatives where feasible. Missing implementations are not accepted exceptions; record capability-specific constraints and demonstrate the alternative. |
 | DEC3 | Restore browser execution. | npm/build access and GitHub publication restored. Browser execution remains an environment blocker for paired evidence and account setup. |
@@ -217,5 +218,6 @@ The owner supplied paired desktop home/login screenshots on 2026-10-15. They dem
 | Home hero and CTA routing | [PR #5](https://github.com/tommy-muckstack/typeformisdead/pull/5) | Lint, typecheck, production build and 44-link HTTP routing check pass | Owner original/before captures committed; after/mobile browser checks pending. |
 | Free prompt creation | [PR #6](https://github.com/tommy-muckstack/typeformisdead/pull/6) | Lint, typecheck, 53 unit tests, production build and local production API check pass | Replaces renaming a blank form; common goals and explicit question lists produce editable questions without a paid API. English deterministic rules, not a language model. |
 | Home integrations promotion removal | Local branch `fix/remove-home-integrations` | Lint, typecheck, production build and local HTTP checks pass | Removes the requested panel, its CSS and the shared fixed minimum height. Browser rendering remains unverified. |
+| Email and Google sign-in only | Local branch `fix/email-google-only` | Lint, typecheck, production build and login/signup HTTP checks pass | Removes Microsoft/SSO options from login/signup and their unused styles. |
 
 PRs #4–#6 are published as a stack and all three initial Vercel deployment checks succeeded. The [combined preview](https://typeformisdead-git-fix-free-prompt-creation-muckstack-projects.vercel.app/typeformisdead) contains the home, login and free prompt changes. On 2026-10-15, the owner explicitly instructed pushing and merging all three changes into main despite the documented browser limitation. Actual rendered desktop/mobile comparison is still unavailable and remains an outstanding check. A successful build/deployment is not visual parity evidence.
