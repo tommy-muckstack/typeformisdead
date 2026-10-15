@@ -40,7 +40,7 @@ export function Player({ form, preview, focusId, onSubmit }: PlayerProps) {
     <div className="tfp__stage" key={String(step)}>
       {step === "welcome" && <div className="tfp__q"><h1 className="tfp__title">{form.welcome.title || form.title}</h1>{form.welcome.description && <p className="tfp__desc">{form.welcome.description}</p>}<div className="tfp__actions"><button className="ids-btn ids-btn--primary" onClick={() => setStep(0)}>{form.welcome.button || "Start"}</button><span className="tfp__hint">press <b>Enter ↵</b></span></div></div>}
       {q && <div className="tfp__q">
-        <div className="tfp__n">{typeof step === "number" ? step + 1 : ""} →</div>
+        <div className="tfp__n">{typeof step === "number" ? step + 1 : ""}<span className="tfp__arr"> →</span></div>
         <h1 className="tfp__title">{q.title}{q.required && <span aria-label="required" title="required"> *</span>}</h1>{q.description && <p className="tfp__desc">{q.description}</p>}
         <div className="tfp__a">
           {(q.type === "short_text" || q.type === "email" || q.type === "number" || q.type === "date") && <input autoFocus aria-label={q.title} className="tfp__input" type={q.type === "short_text" ? "text" : q.type} inputMode={q.type === "number" ? "decimal" : undefined} placeholder={q.type === "email" ? "name@example.com" : q.type === "date" ? "" : "Type your answer here…"} value={val === undefined ? "" : String(val)} onChange={e => set(q.type === "number" ? (e.target.value === "" ? undefined : Number(e.target.value)) : e.target.value)} />}

@@ -11,6 +11,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const u = await currentUser(); if (!u) return NextResponse.json({ error: "Sign in required" }, { status: 401 });
   const body = await req.json().catch(() => ({})); const tpl = FORM_TEMPLATES.find(t => t.id === body?.template) ?? FORM_TEMPLATES[0];
-  const f = sanitizeForm(tpl.build(), { id: rid("f"), ownerId: u.id, createdAt: Date.now() }); await saveForm(f);
+  const built = tpl.build(); if (typeof body?.title === "string" && body.title.trim()) built.title = body.title.trim().slice(0, 80);
+  const f = sanitizeForm(built, { id: rid("f"), ownerId: u.id, createdAt: Date.now() }); await saveForm(f);
   return NextResponse.json({ form: f }, { status: 201 });
 }
