@@ -99,10 +99,8 @@ export function SharePage({ link, published, onPublished, onCopy, copied, title,
       <div className="tfc-ask">{TI.mic}<span>Ask TypeformIsDead AI</span><i>{TI.send}</i></div></aside>
     <div className="tfc-sc">
       <div className="tfc-urlbar"><button className="tfc-copy" onClick={onCopy}>{TI.link} {copied ? "Copied" : "Copy link"}</button><span className="u">{sub === "link" ? link : sub === "email" ? "Paste into your email" : "Paste into your page"}</span><span className="e">{TI.edit} Edit</span><span className="ic">{TI.mail}</span><span className="ic">⌗</span></div>
-      <label className="tfc-pub"><input type="checkbox" checked={published} onChange={e => onPublished(e.target.checked)} /> Accepting responses (published)</label>
       {sub === "link" && <div className="tfc-linkprev"><div className="sk a" /><div className="card"><div className="av" /><div className="ln w1" /><div className="ln w2" /><div className="ln w3" /><div className="ln w4" /><div className="og"><div className="th"><b>▮▮ TypeformIsDead</b></div><div><p className="t">{ptitle}</p><p className="d">{desc}</p><p className="h">{link.replace(/^https?:\/\//, "").split("/")[0]}</p></div></div></div><div className="sk b" /></div>}
       {sub !== "link" && <pre className="tfc-code">{sub === "web" ? embed : `<a href="${link}">${title.replace(/</g, "&lt;")}</a>`}</pre>}
-      <p className="tfc-resl"><button onClick={onResults} className="tfc-linkbtn">View responses →</button></p>
     </div>
     <aside className="tfc-sr">
       <p className="lab">Share in:</p><div className="soc">{["f", "in", "𝕏", "◈", "✳"].map(s => <span key={s}>{s}</span>)}</div>
@@ -111,6 +109,8 @@ export function SharePage({ link, published, onPublished, onCopy, copied, title,
       <label>Title</label><input className="fld" value={ptitle} onChange={e => setPtitle(e.target.value)} aria-label="Link preview title" />
       <label>Description {TI.help}</label><textarea className="fld ta" value={desc} onChange={e => setDesc(e.target.value)} aria-label="Link preview description" />
       <div className="sw"><span>Show in search results {TI.help}</span><button role="switch" aria-checked={seo} className={seo ? "on" : ""} onClick={() => setSeo(s => !s)}><i /></button></div>
+      <label className="tfc-pub"><input type="checkbox" checked={published} onChange={e => onPublished(e.target.checked)} /> Accepting responses (published)</label>
+      <p className="tfc-resl"><button onClick={onResults} className="tfc-linkbtn">View responses →</button></p>
     </aside>
   </div>;
 }
