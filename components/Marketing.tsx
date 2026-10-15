@@ -28,10 +28,10 @@ export function Marketing() {
     <Section title={site.integrations.title} subtitle={site.integrations.text} />
     <Section id="pricing" title={site.pricing.title}>
       <div style={{ marginTop: 32 }}><PriceCompare /></div>
-      <p className="ids-muted" style={{ fontSize: 13 }}>{site.pricing.footnote} List prices as of {site.pricing.asOf}; check {site.pricing.vendor}'s pricing page for today's numbers.</p>
+      <p className="ids-muted" style={{ fontSize: 13 }}>{site.pricing.footnote} List prices as of {site.pricing.asOf}; check {site.pricing.vendor}&apos;s pricing page for today&apos;s numbers.</p>
       <h3 className="ids-h2" style={{ textAlign: "center", margin: "56px 0 24px" }}>{site.pricing.featuresTitle}</h3>
       <div className="ids-card" style={{ padding: 8, overflowX: "auto" }}>
-        <table className="mk-table" data-testid="feature-table"><thead><tr><th>Feature</th><th>{site.pricing.vendor} plan you'd need</th><th>{site.name}</th></tr></thead>
+        <table className="mk-table" data-testid="feature-table"><thead><tr><th>Feature</th><th>{site.pricing.vendor} plan you&apos;d need</th><th>{site.name}</th></tr></thead>
           <tbody>{site.pricing.features.map(f => <tr key={f.name}><td>{f.name}</td><td className="ids-muted">{f.plan}</td><td className="mk-yes">✓ Free</td></tr>)}</tbody></table></div>
     </Section>
     <section className="mk-final"><h2 className="ids-h1" style={{ fontSize: "var(--ids-type-3xl)" }}>{site.finalCta.title}</h2><p className="ids-muted mk-lede" style={{ margin: "12px auto 0" }}>{site.finalCta.sub}</p>

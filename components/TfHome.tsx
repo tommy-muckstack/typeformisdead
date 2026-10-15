@@ -15,7 +15,7 @@ export function TfHome() {
     <Band h={2900} className="tfh-hero"><TfNav />
       <div className="tfh-hin"><small>AI FORMS &amp; AUTOMATION</small><h1>Your favorite forms.<br />Now with AI automation.</h1>
         <p>Combine AI forms and automated workflows to drive revenue growth. Run in-depth research and then analyze your data for rich insights. All in TypeformIsDead.</p>
-        <Link className="tfh-white" href="/login">Get started—it's free</Link>
+        <Link className="tfh-white" href="/login">Get started—it&apos;s free</Link>
         <div className="tfh-tabs"><div className="on"><small>ASK</small><b>Intelligent Forms</b><span>Build forms that adapt to every respondent and then analyze your data for rich insights.</span><i /></div><div><small>ACT</small><b>Growth Flow <em>NEW</em></b><span>Convert and keep customers with automated segmentation and follow-ups.</span></div><div><small>LEARN</small><b>Research Flow <em>NEW</em></b><span>Make confident business decisions fast with AI-moderated studies and automated reports.</span></div></div>
         <div className="tfh-stage"><div className="steps"><i>Branding form…</i><i>Structuring questions…</i><i>Adding logic…</i></div><Mock className="tfh-form"><div className="l"><b /><b /><b /></div><div className="r" /></Mock></div></div></Band>
     <Band h={732} className="tfh-light"><div className="tfh-two"><div><small className="pur">INTELLIGENT FORMS</small><h2>Build forms at the drop of a prompt</h2><p>With over 48 million responses collected monthly, TypeformIsDead AI builds best-in-class forms in seconds. Start with a sentence, finish with a form your respondents like.</p><Link className="tfh-dark" href="/login">Explore forms</Link></div><div className="art"><span /></div></div>
@@ -26,7 +26,7 @@ export function TfHome() {
     <Band h={1730} className="tfh-join"><h2>Join 150,000+ businesses driving revenue with TypeformIsDead</h2><div className="logos"><b>Webflow</b><b>_zapier</b><b>SHOPIFY</b></div>
       <div className="cards"><div><b>SmartBug Media increased sales leads by 40% with one form</b></div><div><b>Double: Destiny Marketing drove $3.67 million in sales</b></div><div><b>Viva scaled customer engagement</b></div></div><div className="dots">•••••••••</div><Link className="tfh-ghost2" href="/login">Read all customer stories</Link>
       <div className="tfh-integ"><h3>Integrate with your tech stack</h3><div className="row"><b>Calendly</b><b>CallRail</b><b>Calendly</b><b>Marketo</b><b>slack</b><b>stripe</b></div><div className="row"><b>CallRail</b><b>Calendly</b><b>zapier</b><b>Webflow</b><b>stripe</b></div><Link className="tfh-ghost2" href="/login">View integrations</Link></div></Band>
-    <Band h={487} className="tfh-cta"><h2>AI forms and automation.<br />All in TypeformIsDead.</h2><Link className="tfh-white" href="/login">Get started—it's free</Link></Band>
+    <Band h={487} className="tfh-cta"><h2>AI forms and automation.<br />All in TypeformIsDead.</h2><Link className="tfh-white" href="/login">Get started—it&apos;s free</Link></Band>
     <Foot cols={FOOT} bg="#2a222b" color="#fff" minH={783} top={<div className="tfh-ftop"><Logo /></div>} legal={<><span>Contact sales</span><span>Check our commitment to data privacy</span><span>Legal</span><span>© 2026</span></>} note={`TypeformIsDead is an independent open-source project, not affiliated with or endorsed by Typeform S.L. Typeform is a trademark of its owner. Source: ${Gh("typeformisdead")} (Apache-2.0)`} />
   </div></>;
 }

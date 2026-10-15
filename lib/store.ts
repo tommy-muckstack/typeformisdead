@@ -6,7 +6,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const safe = (s: string) => s.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 80);
-const useFirestore = () => !!process.env["FIREBASE_SERVICE_ACCOUNT_JSON"];
+const shouldUseFirestore = () => !!process.env["FIREBASE_SERVICE_ACCOUNT_JSON"];
 const appName = () => safe((process.env["NEXT_PUBLIC_BASE_PATH"] ?? "/app").replace(/\//g, "")) || "app";
 const CHUNK = 900_000;
 
@@ -67,7 +67,7 @@ async function fileList<T>(col: string): Promise<T[]> {
 }
 async function fileDel(col: string, id: string) { try { await fs.unlink(path.join(dir(), safe(col), safe(id) + ".json")); } catch { /* ok */ } }
 
-export const getDoc = <T>(col: string, id: string): Promise<T | null> => (useFirestore() ? fsGet<T>(col, id) : fileGet<T>(col, id));
-export const putDoc = <T>(col: string, id: string, doc: T): Promise<void> => (useFirestore() ? fsPut(col, id, doc) : filePut(col, id, doc));
-export const listDocs = <T>(col: string): Promise<T[]> => (useFirestore() ? fsList<T>(col) : fileList<T>(col));
-export const delDoc = (col: string, id: string): Promise<void> => (useFirestore() ? fsDel(col, id) : fileDel(col, id));
+export const getDoc = <T>(col: string, id: string): Promise<T | null> => (shouldUseFirestore() ? fsGet<T>(col, id) : fileGet<T>(col, id));
+export const putDoc = <T>(col: string, id: string, doc: T): Promise<void> => (shouldUseFirestore() ? fsPut(col, id, doc) : filePut(col, id, doc));
+export const listDocs = <T>(col: string): Promise<T[]> => (shouldUseFirestore() ? fsList<T>(col) : fileList<T>(col));
+export const delDoc = (col: string, id: string): Promise<void> => (shouldUseFirestore() ? fsDel(col, id) : fileDel(col, id));
