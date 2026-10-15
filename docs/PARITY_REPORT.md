@@ -54,14 +54,14 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | H07 | Hover, focus, keyboard and reduced motion | unverified | P2 | Compare real focus order, menu Escape behavior, visible focus and animation preferences. | pending E3 |
 | H08 | Footer links and disclaimer | differs | P2 | [Foot](../components/Pk.tsx) uses `#` for all links. Preserve disclaimer. Check that mobile exposes it too. | pending E3 |
 | H09 | Cookie banner and consent state | missing | P2 | No cookie-banner component/consent interaction found. Determine necessary free-product equivalent based on actual cookies. | pending E3 |
-| A01 | Login desktop/mobile layout | unverified | P3 | [TfLogin](../components/TfLogin.tsx), [styles](../app/globals.css). Compare loaded fonts, artwork and both email/password steps. | pending E3 |
+| A01 | Login desktop/mobile layout | differs | P3 | Owner screenshots confirm undersized desktop controls/form and different panel colors/artwork. Corrected geometry, typography, spacing, divider and carousel on `fix/login-screenshot-parity`; rendered after/mobile verification remains blocked. | [Original/before and measurements](parity/login-reference/README.md) |
 | A02 | Email login and session persistence | unverified | P1 | Firebase path exists; no local Firebase configuration or account evidence. Test live deployment as requested. | pending E3 |
 | A03 | Signup and email verification | unverified | P1 | Signup mode exists; disposable account creation has not run. Required for product audit. | pending E3 |
 | A04 | Forgot password and recovery messages | unverified | P1 | Reset path exists. Test only a disposable address; do not complete a user password change. | pending E3 |
 | A05 | Google button and logo | unverified | P2 | Inline SVG and custom button in TfLogin; compare official button artwork/specification and clone-only behavior. Never use original Google sign-in. | pending E3 |
 | A06 | Microsoft and SSO capability | missing | P2 | Buttons disabled unconditionally. These remain feature work, not paid-plan exceptions. Do not change secrets as part of this audit. | pending E3 |
 | A07 | Email/password validation and error states | unverified | P2 | Browser-native required/email checks and Firebase errors exist; compare copy, placement, field focus and retry. | pending E3 |
-| A08 | Login carousel, language, contact links | differs | P2 | Play/pause state has no timer, language disabled, contact href `#`. | pending E3 |
+| A08 | Login carousel, language, contact links | differs | P2 | Carousel now rotates with working previous/next/dots/pause and reduced-motion support; contact links to project support. Language selection remains unavailable. Browser interaction verification pending. | [Reference](parity/login-reference/README.md) |
 
 ## Workspace and form creation
 
@@ -199,6 +199,10 @@ The owner supplied [morluto/rea](https://github.com/morluto/rea), inspected at `
 
 Recommended order: restore verification → home/login → dashboard/free-access copy → builder state/publishing → response integrity → question types/settings → logic/variables → design → share/integrations → results/analytics → remaining product modules. Split areas further whenever a PR would otherwise be too large.
 
+## Current screenshot correction
+
+The owner supplied paired desktop home/login screenshots on 2026-10-15. They demonstrate major visual differences; no previous merged PR claimed to fix those surfaces. The login correction uses measured screenshot geometry and free licensed replacement artwork. Local WebKit was also attempted and aborts before navigation, so after-capture verification is still blocked.
+
 ## PR ledger
 
 | Area | PR | Validation | Evidence |
@@ -207,3 +211,5 @@ Recommended order: restore verification → home/login → dashboard/free-access
 | Respondent calendar-date validation | [PR #2](https://github.com/tommy-muckstack/typeformisdead/pull/2) | Lint, typecheck, 39 unit tests and production build pass | Twenty new invalid/valid/optional date cases exercise both answer and submission validation; browser captures pending. |
 | Response storage and view-count integrity | [PR #3](https://github.com/tommy-muckstack/typeformisdead/pull/3) | Lint, typecheck, 45 unit tests, production build, local HTTP regression and two Firestore emulator integration tests pass | Reproduced 99 lost responses/views per 100 concurrent requests before the fix; all retained after. Legacy/chunk compatibility, quota removal, same-ID deduplication and isolated deletion tested. Browser captures pending. |
 | Remaining product work | Not opened | Not implemented/verified yet | All unresolved rows above remain open |
+
+| Login screenshot correction | Local branch `fix/login-screenshot-parity` | Lint, typecheck and production build pass | Owner original/before captures committed; after/mobile browser checks pending. |
