@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Band, Btn, Nav, Foot, Mock, Gh } from "@/components/Pk";
 import "./tfhome.css";
+import { TfHomeM } from "./TfHomeM";
 
 const Logo = ({ c = "#fff" }: { c?: string }) => <span className="tfh-logo" style={{ color: c }}><svg width="22" height="14" viewBox="0 0 22 14"><rect width="22" height="14" rx="3" fill="currentColor" /><rect x="4" y="4" width="5" height="6" rx="1" fill="#2a222b" /></svg>TypeformIsDead</span>;
 const FOOT: [string, string[]][] = [["Product", ["Pricing", "Enterprise"]], ["Templates", ["Popular templates", "Survey templates", "Quiz templates", "Recent categories"]], ["Integrations", ["Popular integrations", "Marketing apps", "Popular app categories", "More apps categories"]], ["Resources", ["Blog", "Help Center", "Community", "Podcast", "Typeform Academy", "Technical program", "Education", "Status"]], ["Company", ["About us", "Press", "Careers", "Contact sales", "Legal", "Accessibility"]]];
@@ -9,7 +10,7 @@ export function TfNav() {
     right={<><Link className="tfh-ghost" href="/login">Log in</Link><Link className="tfh-ghost" href="/login">Contact sales</Link><Link className="tfh-solid" href="/login">Sign up</Link></>} />;
 }
 export function TfHome() {
-  return <div className="tfh pk">
+  return <><TfHomeM /><div className="tfh pk tfh-desk">
     <div className="tfh-banner">Connect Claude, ChatGPT, or any MCP-ready assistant to your TypeformIsDead account. <u>Try it now</u><i>✕</i></div>
     <Band h={2900} className="tfh-hero"><TfNav />
       <div className="tfh-hin"><small>AI FORMS &amp; AUTOMATION</small><h1>Your favorite forms.<br />Now with AI automation.</h1>
@@ -27,5 +28,5 @@ export function TfHome() {
       <div className="tfh-integ"><h3>Integrate with your tech stack</h3><div className="row"><b>Calendly</b><b>CallRail</b><b>Calendly</b><b>Marketo</b><b>slack</b><b>stripe</b></div><div className="row"><b>CallRail</b><b>Calendly</b><b>zapier</b><b>Webflow</b><b>stripe</b></div><Link className="tfh-ghost2" href="/login">View integrations</Link></div></Band>
     <Band h={624} className="tfh-cta"><h2>AI forms and automation.<br />All in TypeformIsDead.</h2><Link className="tfh-white" href="/login">Get started—it's free</Link></Band>
     <Foot cols={FOOT} bg="#2a222b" color="#fff" minH={783} top={<div className="tfh-ftop"><Logo /></div>} legal={<><span>Contact sales</span><span>Check our commitment to data privacy</span><span>Legal</span><span>© 2026</span></>} note={`TypeformIsDead is an independent open-source project, not affiliated with or endorsed by Typeform S.L. Typeform is a trademark of its owner. Source: ${Gh("typeformisdead")} (Apache-2.0)`} />
-  </div>;
+  </div></>;
 }
