@@ -32,6 +32,10 @@ Severity: P0 = potential lost/corrupt responses; P1 = core workflow blocked or m
 | E9 | `npm run typecheck` failed on missing Next/React declarations; `npm run build` and the requested dev command failed with `next: command not found`. | Failed setup gates, not confirmed product type errors. Rerun after successful dependency installation. |
 | E10 | `node --check scripts/parity-capture.mjs` passed. | Syntax only; the capture utility has not run end to end. |
 | E11 | Resumed setup: process-local DNS resolution restored npm downloads; installed a local temporary Node 24.22 runtime. Added Next-compatible ESLint config and fixed pre-existing JSX escaping/helper naming errors. | `npm run lint` passes with one existing image advisory; `npm run typecheck`, all 19 unit tests and `npm run build` pass. E4/E5/E9 are historical, resolved blockers. No cloud credentials configured; tests use local files. |
+| E12 | Playwright Firefox also aborts before opening a page, including elevated execution. A local Next production server and HTTP requests work. Next's tracing root is now explicitly the repository. | Browser comparison/account setup remain blocked. API checks are useful regression evidence, but do not replace paired browser captures. |
+| E13 | Local reproduction retained only 1 of 100 concurrent submissions and 1 of 100 concurrent views. Independent response/view records now retain all 100, preserve legacy data, and remove the artificial 5,000-response cap. | All 45 unit tests, lint, typecheck and build pass. `scripts/check-local-api.mjs` passes against the production build with a fresh temporary local directory: date validation, concurrent traffic, owner-only results, CSV and deletion. Firestore behavior remains untested. |
+
+Cost constraint: source, captures, reports and test fixtures stay on local disk during development. The production-build regression script explicitly disables cloud storage and removes its own temporary data. No paid APIs, cloud provisioning or deployment are authorized by this verification workflow. Requested PRs would upload code/evidence to GitHub; existing account billing and future hosting costs are outside local-file guarantees.
 
 For every row below, screenshot value `pending E3` means **no screenshot captured**, at either viewport. Code links identify the inspected implementation, not observed original behavior. Rows are a baseline inventory, not an assertion that every difference has been discovered.
 
@@ -144,9 +148,9 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | R07 | Thank-you screens and redirect | differs | P2 | One static ending; missing conditional endings and redirects. | pending E3 |
 | R08 | Unpublished form message | differs | P1 | [Public route](../app/f/[id]/page.tsx) calls generic notFound for both missing and unpublished forms. | pending E3 |
 | R09 | Server branching and response validation | unverified | P1 | [validateSubmission](../lib/forms/logic.ts) evaluates visited path and rejects unknown question IDs; verify stored answers after backtracking. | pending E3 |
-| R10 | Durable and concurrent response storage | differs | P0 | [addResponse](../lib/forms/server.ts) reads and rewrites an entire response array without transaction. Lost-update risk under concurrency; not yet reproduced. | pending E3 |
-| R11 | Response limits | differs | P1 | Storage rejects at 5,000 responses while UI advertises 10. Replace artificial monetization limits; document real technical capacity truthfully. | pending E3 |
-| R12 | Views, starts and step timing | differs | P1 | Only aggregate view count persisted, using another read-modify-write. No starts, device or per-step timing events. | pending E3 |
+| R10 | Durable and concurrent response storage | unverified | P0 | Reproduced lost updates and fixed locally on `fix/response-storage` with separate response records and atomic local-file replacement. 100 simultaneous submissions retained through the real HTTP API; legacy reads and form-data deletion covered. Firestore and browser verification remain pending (E13). | pending E3 |
+| R11 | Response limits | differs | P1 | Removed the artificial 5,000-response storage cap; regression retains response 5,001. UI still advertises ten responses and needs correction. Real disk/provider capacity is finite; no promise of unlimited hosted storage. | pending E3 |
+| R12 | Views, starts and step timing | differs | P1 | Concurrent view losses fixed with independent events; real HTTP check counts all 100 views. No starts, device or per-step timing instrumentation yet. | pending E3 |
 | R13 | Retry/offline behavior | unverified | P1 | [FillForm](../components/typeform/FillForm.tsx) catches submission errors; test retained answers and duplicate prevention after uncertain network outcome. | pending E3 |
 
 ## Results and product states
@@ -176,7 +180,7 @@ For every row below, screenshot value `pending E3` means **no screenshot capture
 | EX3 | Pricing and other marketing pages beyond home/login. | Explicitly out of scope. No pricing PR planned. |
 | DEC1 | Payment question functionality vs. original instruction not to change payment behavior. | Human scope decision needed before implementation. No payment integration changes made. |
 | DEC2 | Hosted AI/video/storage/integrations with real operating costs. | Implement free/local alternatives where feasible. Missing implementations are not accepted exceptions; record capability-specific constraints and demonstrate the alternative. |
-| DEC3 | Restore browser execution, npm registry access and GitHub API connectivity. | Environment blocker; needed for evidence, builds, account setup and PR creation. |
+| DEC3 | Restore browser execution and GitHub API connectivity. | npm/build access restored. Browser and GitHub API remain environment blockers for evidence, account setup and PR creation. |
 
 ## REA reference
 
@@ -199,4 +203,5 @@ Recommended order: restore verification → home/login → dashboard/free-access
 | --- | --- | --- | --- |
 | Baseline report, public capture utility and lint gate | Local branch `qa/parity-baseline`; not opened | Lint, typecheck, 19 unit tests, build and capture-script syntax pass (E11). One existing image lint advisory. | Source audit only; no paired screenshots. Tooling/JSX escaping changes preserve rendered text. |
 | Respondent calendar-date validation | Local branch `fix/respondent-date-validation`; not opened | Lint, typecheck, 39 unit tests and production build pass | Twenty new invalid/valid/optional date cases exercise both answer and submission validation; browser captures pending. |
+| Response storage and view-count integrity | Local branch `fix/response-storage`; not opened | Lint, typecheck, 45 unit tests, production build and local HTTP regression pass | Reproduced 99 lost responses/views per 100 concurrent requests before the fix; all retained after. Legacy compatibility, quota removal, same-ID deduplication and isolated deletion tested locally. Firestore and browser captures pending. |
 | Product fixes | Not opened | Not implemented/verified yet | All unresolved rows above remain open |

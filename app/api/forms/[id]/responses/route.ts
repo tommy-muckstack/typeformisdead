@@ -3,7 +3,6 @@ import { currentUser } from "@/lib/session";
 import { getForm, addResponse, getResponses } from "@/lib/forms/server";
 import { validateSubmission } from "@/lib/forms/logic";
 import { toCSV } from "@/lib/forms/results";
-import { rid } from "@/lib/forms/templates";
 export const runtime = "nodejs";
 type Ctx = { params: Promise<{ id: string }> };
 // Public: submit answers. Validated against the form on the server (required, types, only the path actually walked).
@@ -13,7 +12,7 @@ export async function POST(req: NextRequest, { params }: Ctx) {
   let body: any; try { body = JSON.parse(raw); } catch { return NextResponse.json({ error: "Bad JSON" }, { status: 400 }); }
   if (!body || typeof body.answers !== "object" || body.answers === null || Array.isArray(body.answers)) return NextResponse.json({ error: "answers required" }, { status: 400 });
   const v = validateSubmission(f, body.answers); if (!v.ok) return NextResponse.json({ error: "Invalid answers", errors: v.errors }, { status: 422 });
-  try { await addResponse({ id: rid("r"), formId: id, answers: v.clean, submittedAt: Date.now(), durationMs: typeof body.durationMs === "number" ? Math.max(0, Math.min(3.6e6, body.durationMs)) : undefined }); } catch (e: any) { return NextResponse.json({ error: e.message }, { status: 429 }); }
+  try { await addResponse({ id: `r${crypto.randomUUID()}`, formId: id, answers: v.clean, submittedAt: Date.now(), durationMs: typeof body.durationMs === "number" ? Math.max(0, Math.min(3.6e6, body.durationMs)) : undefined }); } catch { return NextResponse.json({ error: "Unable to save your response. Please try again." }, { status: 500 }); }
   return new NextResponse(null, { status: 201 });
 }
 // Owner only: JSON, or CSV with ?format=csv

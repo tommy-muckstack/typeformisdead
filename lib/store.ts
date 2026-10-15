@@ -4,6 +4,7 @@
 // $ISDEAD_DATA_DIR (default .data/). Same API either way: getDoc / putDoc / listDocs / delDoc.
 import fs from "node:fs/promises";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 
 const safe = (s: string) => s.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 80);
 const shouldUseFirestore = () => !!process.env["FIREBASE_SERVICE_ACCOUNT_JSON"];
@@ -57,7 +58,11 @@ async function fileGet<T>(col: string, id: string): Promise<T | null> {
 }
 async function filePut<T>(col: string, id: string, doc: T) {
   const d = path.join(dir(), safe(col)); await fs.mkdir(d, { recursive: true });
-  await fs.writeFile(path.join(d, safe(id) + ".json"), JSON.stringify(doc));
+  const temporary = path.join(d, `${safe(id)}.${randomUUID()}.tmp`);
+  try {
+    await fs.writeFile(temporary, JSON.stringify(doc), { mode: 0o600 });
+    await fs.rename(temporary, path.join(d, safe(id) + ".json"));
+  } finally { await fs.rm(temporary, { force: true }); }
 }
 async function fileList<T>(col: string): Promise<T[]> {
   const d = path.join(dir(), safe(col));
@@ -71,3 +76,22 @@ export const getDoc = <T>(col: string, id: string): Promise<T | null> => (should
 export const putDoc = <T>(col: string, id: string, doc: T): Promise<void> => (shouldUseFirestore() ? fsPut(col, id, doc) : filePut(col, id, doc));
 export const listDocs = <T>(col: string): Promise<T[]> => (shouldUseFirestore() ? fsList<T>(col) : fileList<T>(col));
 export const delDoc = (col: string, id: string): Promise<void> => (shouldUseFirestore() ? fsDel(col, id) : fileDel(col, id));
+
+export async function countDocs(col: string): Promise<number> {
+  if (shouldUseFirestore()) {
+    const snapshot = await (await db()).collection(colName(col)).where("main", "==", true).count().get();
+    return snapshot.data().count;
+  }
+  try { return (await fs.readdir(path.join(dir(), safe(col)))).filter(name => name.endsWith(".json")).length; }
+  catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return 0; throw error; }
+}
+
+/** Only for collections owned by one form, after checking that form's owner. */
+export async function delCollection(col: string): Promise<void> {
+  if (shouldUseFirestore()) {
+    const firestore = await db();
+    await firestore.recursiveDelete(firestore.collection(colName(col)));
+  } else {
+    await fs.rm(path.join(dir(), safe(col)), { recursive: true, force: true });
+  }
+}
