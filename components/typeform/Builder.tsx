@@ -62,7 +62,7 @@ export function Builder({ initial }: { initial: Form }) {
               <span>go to</span><select aria-label={`Jump ${i + 1} destination`} className="ids-input" value={j.goto} onChange={e => setJump(i, { goto: e.target.value })}>{later.map(l => <option key={l.id} value={l.id}>{form.questions.indexOf(l) + 1}. {l.title.slice(0, 28)}</option>)}<option value="end">Ending screen</option></select>
               <button className="iconbtn" aria-label={`Remove jump ${i + 1}`} onClick={() => patchQ({ jumps: q.jumps!.filter((_, k) => k !== i) })}>Remove</button></div>)}
             <button className="iconbtn" onClick={() => patchQ({ jumps: [...(q.jumps ?? []), { op: q.type === "yes_no" ? "is" : "answered", value: q.type === "yes_no" ? "false" : "", goto: later[0]?.id ?? "end" }] })}>+ Add jump</button></div>
-          <div className="tfs-card"><div className="tfs-h tfs-row">Comments <span className="tfc-gem" style={{ marginLeft: 0 }}>{TI.gem}</span></div></div>
+          <div className="tfs-card"><div className="tfs-h tfs-row">Comments</div></div>
           <div className="tb" style={{ marginTop: 16 }}><button className="iconbtn" onClick={() => move(q.id, -1)} disabled={idx === 0} aria-label="Move up">↑ Up</button><button className="iconbtn" onClick={() => move(q.id, 1)} disabled={idx === form.questions.length - 1} aria-label="Move down">↓ Down</button><button className="iconbtn" onClick={() => dupQ(q.id)}>Duplicate</button><button className="iconbtn" onClick={() => delQ(q.id)} disabled={form.questions.length < 2}>Delete</button></div></>}
       </aside></div>}
     {addOpen && <AddContentModal onClose={() => setAddOpen(false)} onPick={pickKind} />}
