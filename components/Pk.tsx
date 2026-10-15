@@ -17,9 +17,9 @@ export function Nav({ logo, links, right, bg, color, pos = "static", h = 64, cla
     <Link href="/" className="pk-logo">{logo}</Link><nav>{links.map(l => <a key={l} href="#">{l}</a>)}</nav><span className="pk-sp" /><div className="pk-right">{right}</div></header>;
 }
 /** Multi-column footer. cols: [title, links[]] */
-export function Foot({ cols, bg, color, minH, legal, top, note }: { cols: [string, string[]][]; bg?: string; color?: string; minH?: number; legal?: ReactNode; top?: ReactNode; note?: string }) {
+export function Foot({ cols, bg, color, minH, legal, top, note, linkHref = "#" }: { cols: [string, string[]][]; bg?: string; color?: string; minH?: number; legal?: ReactNode; top?: ReactNode; note?: string; linkHref?: string }) {
   return <footer className="pk-foot" style={{ background: bg, color, minHeight: minH }}><div className="pk-foot-in">{top}
-    <div className="pk-cols" style={{ gridTemplateColumns: `repeat(${Math.min(cols.length, 6)},1fr)` }}>{cols.map(([t, ls]) => <div key={t}><h5>{t}</h5>{ls.map(l => <a key={l} href="#">{l}</a>)}</div>)}</div>
+    <div className="pk-cols" style={{ gridTemplateColumns: `repeat(${Math.min(cols.length, 6)},1fr)` }}>{cols.map(([t, ls]) => <div key={t}><h5>{t}</h5>{ls.map(l => <Link key={l} href={linkHref}>{l}</Link>)}</div>)}</div>
     <div className="pk-legal">{legal}{note && <p>{note}</p>}</div></div></footer>;
 }
 /** Card used in grids: gradient/solid bg, title, optional button. */
