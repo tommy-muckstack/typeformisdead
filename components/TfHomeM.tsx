@@ -14,7 +14,7 @@ export function TfHomeM() {
       <span className="burger" aria-hidden><i /><i /><i /></span></div>
     {items.map((it, i) => {
       if (it.k === "b") return <div key={i} className={"b" + (it.media ? " m" : "")} style={{ left: it.x, top: it.y, width: it.w, height: it.h, background: it.bg || undefined, border: it.bd ? `1px solid ${it.bd.split(" ").slice(1).join("")}` : undefined, borderRadius: it.r }} />;
-      const style = { left: it.x, top: it.y, width: it.w, fontSize: it.fs, lineHeight: it.lh, fontWeight: it.fw, color: it.c, textAlign: it.ta as "center", letterSpacing: it.ls === "normal" ? undefined : it.ls, whiteSpace: it.nw ? ("nowrap" as const) : undefined };
+      const style = { left: it.x, top: it.y, width: it.w, fontSize: it.fs, lineHeight: it.lh, fontWeight: it.fw, color: it.c, textAlign: it.ta as "center", letterSpacing: it.ls === "normal" ? undefined : it.ls, whiteSpace: it.nw || (it.lh && it.h <= parseFloat(it.lh) * 1.3) ? ("nowrap" as const) : undefined };
       const cls = "t" + (it.disp ? " d" : "") + (it.fs === "48px" ? " d" : "");
       return LINK.test(it.t || "") ? <Link key={i} href="/login" className={cls} style={style}>{it.t}</Link> : <div key={i} className={cls} style={style}>{it.t}</div>;
     })}
