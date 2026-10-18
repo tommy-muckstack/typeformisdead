@@ -6,7 +6,7 @@ import { TYPE_LABELS } from "@/lib/forms/logic";
 import { newQuestion, rid } from "@/lib/forms/templates";
 import { Player } from "./Player";
 import { Results } from "./Results";
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, EVENTS } from "@/lib/analytics";
 import { BP } from "@/lib/basepath";
 import { AddContentModal, DesignPopover, PreviewOverlay, SharePage, TI } from "./Chrome";
 const OPS: [Op, string][] = [["always", "Always"], ["is", "is"], ["is_not", "is not"], ["contains", "contains"], ["gt", "is greater than"], ["lt", "is less than"], ["answered", "is answered"]];
@@ -16,7 +16,7 @@ export function Builder({ initial }: { initial: Form }) {
   const [status, setStatus] = useState<"saved" | "saving" | "error">("saved"); const savedPublished = useRef(initial.published); const dirty = useRef(false); const timer = useRef<any>(null);
   const q = form.questions.find(x => x.id === sel) ?? form.questions[0]; const special = sel === "__welcome" || sel === "__end";
   const edit = useCallback((f: (p: Form) => Form) => { dirty.current = true; setStatus("saving"); setForm(f); }, []);
-  useEffect(() => { if (!dirty.current) return; clearTimeout(timer.current); timer.current = setTimeout(async () => { try { const r = await fetch(`${BP}/api/forms/${form.id}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(form) }); setStatus(r.ok ? "saved" : "error"); if (r.ok && savedPublished.current !== form.published) { savedPublished.current = form.published; trackWebsite("website_form_publish_changed", { published: form.published }); } dirty.current = !r.ok; } catch { setStatus("error"); } }, 500); return () => clearTimeout(timer.current); }, [form]);
+  useEffect(() => { if (!dirty.current) return; clearTimeout(timer.current); timer.current = setTimeout(async () => { try { const r = await fetch(`${BP}/api/forms/${form.id}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(form) }); setStatus(r.ok ? "saved" : "error"); if (r.ok && savedPublished.current !== form.published) { savedPublished.current = form.published; track(EVENTS.app_form_publish_changed, { published: form.published }); } dirty.current = !r.ok; } catch { setStatus("error"); } }, 500); return () => clearTimeout(timer.current); }, [form]);
   const patchQ = (p: Partial<Question>) => edit(f => ({ ...f, questions: f.questions.map(x => (x.id === q.id ? { ...x, ...p } : x)) }));
   const addQ = (type: QType) => { const nq = newQuestion(type); edit(f => { const i = Math.max(0, f.questions.findIndex(x => x.id === q.id)); const qs = f.questions.slice(); qs.splice(i + 1, 0, nq); return { ...f, questions: qs }; }); setSel(nq.id); };
   const pickKind = (t: QType | "welcome" | "end") => { if (t === "welcome") { edit(f => ({ ...f, welcome: { ...f.welcome, enabled: true, title: f.welcome.title || "Welcome!" } })); setSel("__welcome"); } else if (t === "end") setSel("__end"); else addQ(t); };

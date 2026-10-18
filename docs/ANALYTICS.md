@@ -1,69 +1,50 @@
-# Website analytics
+# Analytics (PostHog)
 
-PostHog project **666931**, US region: [project](https://us.posthog.com/project/666931). This integration uses the [official JavaScript SDK](https://posthog.com/docs/libraries/js) with [explicit configuration](https://posthog.com/docs/libraries/js/config). It measures the YourAppIsDead website and its sub-apps. It does not collect application logs or respondent content.
+One PostHog project (US cloud, project **666931**) collects the hub and every IsDead sub-app. The contract is the hub's
+`yourappisdead/ANALYTICS.md`; this file is how TypeformIsDead follows it. Analytics gates nothing and adds no paid features.
 
-## Shared taxonomy
+## Setup
+- `NEXT_PUBLIC_POSTHOG_KEY` = the project's publishable token (safe in the browser); `NEXT_PUBLIC_POSTHOG_HOST=https://us.posthog.com`. Both are set on the Vercel project. No key → analytics is a no-op. (`NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN`, `NEXT_PUBLIC_ANALYTICS_ENABLED` and `NEXT_PUBLIC_ANALYTICS_ENVIRONMENT` are no longer read.)
+- Reverse proxy through the app's own origin: `/typeformisdead/ingest/*` → `us.i.posthog.com` (rewrites in `next.config.mjs`, with `skipTrailingSlashRedirect: true`).
+- `<Analytics />` (`lib/analytics/posthog.tsx`) is mounted once in `app/layout.tsx` and sends PostHog's built-in `$pageview` per route change. `<WebsiteAnalytics />` handles marketing CTA clicks. Autocapture, heatmaps, performance capture and session replay are off. Do Not Track is respected (`respect_dnt`).
+- posthog-js drops events from automated browsers. In dev, `localStorage.isdead_ph_debug = "1"` turns on verbose logs and lets automated browsers capture. Production keeps the bot filter.
 
-Use the same names in every sub-app. Do not put the app name in event names. Filter by `app_id` to view one app, or by `site_id` to see the website portfolio.
-
-| Property | This app | Meaning |
+## Super properties (registered on every event)
+| property | value | meaning |
 | --- | --- | --- |
-| `source` | `website` | Distinguishes web events from future native apps, API or backend events |
-| `site_id` | `yourappisdead` | Stable website portfolio identifier |
-| `app_id` | `typeformisdead` | Stable sub-app slug |
-| `schema_version` | `1` | Increment only for a breaking taxonomy change |
-| `environment` | `production` | `verification` is reserved for explicit smoke tests |
-| `surface` | `marketing`, `auth`, `workspace`, `builder`, `respondent`, `other` | Product area |
-| `page_name` | `home`, `login`, `workspace`, `form_builder`, `form_respondent`, `unknown` | Stable page category |
-| `route_template` | `/typeformisdead/app/forms/:form_id` | Normalized route; no form IDs, queries or fragments |
+| `product` | `typeformisdead` | the one property to filter by (the hub sends `yourappisdead`) |
+| `surface` | `landing` \| `app` | `landing` = home, pricing, login; `app` = the workspace and builder (`/app/*`) and published forms (`/f/*`) |
+| `platform` | `web` | |
+| `env` | `production` \| `development` | |
+| `account_type` | `firebase` \| `guest` \| `demo` | registered after identification |
 
-PostHog's standard `$pageview` is retained so built-in page reporting works. It receives the same website properties as custom events. Custom events use `website_<object>_<past-tense action>` in snake_case.
+At boot the client unregisters older taxonomies' super properties (`source`, `site_id`, `app_id`, `schema_version`, `environment`, `app`, …) from the shared yourappisdead.com cookie.
 
-| Event | Trigger | Additional properties |
+## Identity
+Signed-in users are identified by their Firebase uid (`components/typeform/Dashboard.tsx`), which is what the hub contract requires; the old schema never identified anyone. Guests and the demo account are never identified (`account_type` is registered instead). Sign-out calls `reset()` and re-registers the super properties.
+
+## Privacy rules
+- `track()` rebuilds every event's properties from the allowlist in `lib/analytics/taxonomy.ts` (`safeProps`). Only fixed enums, booleans and a 0–100 question count are sent; anything else drops the event. Never sent: form or response ids, titles, questions, prompts, answers, emails or error text.
+- `before_send` (`scrub`) reduces every URL property posthog-js attaches (any key ending in `url` / `referrer` / `pathname`, including inside `$set` / `$set_once`) to origin + path. Form ids in `/f/<id>` and `/app/forms/<id>` become `:id`, since a form link works like a share token. The page `title` is dropped.
+
+## Events
+| event | properties | trigger |
 | --- | --- | --- |
-| `$pageview` | Initial page and pathname changes; deduplicated for React effect replay | None |
-| `website_cta_clicked` | An explicitly marked home CTA link/button | `cta_location`: announcement/navigation/hero/example/content/footer |
-| `website_auth_started` | Actual auth request, not the email-step navigation | `method`: email/google; `flow`: login/signup/password_reset |
-| `website_auth_completed` | Auth/reset action resolves successfully | Same as started; password reset does not confirm account existence |
-| `website_auth_failed` | Auth request rejects | Same as started; no exception text or credentials |
-| `website_form_created` | Successful create API response | `creation_method`: blank/template/prompt; `question_count`: 0–100 |
-| `website_form_deleted` | Successful delete API response | None |
-| `website_form_publish_changed` | Successful save persists a changed publish state | `published`: boolean |
-| `website_response_submitted` | Respondent submission API returns success | None |
-| `website_analytics_verified` | Explicit integration smoke test only | Use `environment=verification`; exclude from production reporting |
+| `$pageview` | | every route change |
+| `landing_cta_clicked` | `target`: announcement \| navigation \| hero \| example \| content \| footer | a link/button inside an element marked `data-website-cta` |
+| `app_auth_started` / `app_auth_failed` | `method`: password \| google, `flow`: signin \| signup \| password_reset | the auth request begins / rejects (no error text) |
+| `app_signed_up` | `method`: password | email sign-up succeeded (sent with `trackNow` before the redirect) |
+| `app_signed_in` | `method`: password \| google | sign-in succeeded (`trackNow`) |
+| `app_password_reset_requested` | | reset email request accepted |
+| `app_signed_out` | | sign-out form submitted |
+| `app_form_created` | `creation_method`: blank \| template \| prompt, `question_count` | create API succeeded |
+| `app_form_deleted` | | delete API succeeded |
+| `app_form_publish_changed` | `published` | a save persisted a changed publish state |
+| `app_form_response_submitted` | | a respondent's submission succeeded on `/f/:id` |
 
-## Privacy and reliability
+Renamed from the old `website_*` schema (2026-10): `website_cta_clicked` (`cta_location`) → `landing_cta_clicked` (`target`); `website_auth_completed` → `app_signed_up` / `app_signed_in` / `app_password_reset_requested`; `website_auth_*` → `app_auth_*` (`method: "email"` → `"password"`, `flow: "login"` → `"signin"`); `website_form_*` → `app_form_*`; `website_response_submitted` → `app_form_response_submitted`. `website_analytics_verified` and the `source`/`site_id`/`app_id`/`schema_version`/`environment`/`page_name`/`route_template` properties are gone.
 
-- Explicit events only: no DOM autocapture, session recordings, console/error collection, surveys, feature-flag requests or performance capture.
-- No email, password, Firebase user ID, form/response ID, form title, question text, prompt, answer, upload or error-message properties. No `identify()` calls or person profiles.
-- A runtime allowlist filters custom properties. `before_send` also discards unexpected events and all unapproved SDK properties. URLs are rewritten to route templates; query strings, fragments, page titles and referrers are omitted. IP-based enrichment is disabled.
-- PostHog generates an anonymous browser identity. `yourappisdead_website_v1` is the shared localStorage persistence name; use the same name/project for other sub-apps on the same origin. Separate deployment domains have separate browser identities; no cross-domain stitching is attempted.
-- The SDK loads after hydration. Tracking is best-effort and must not block sign-in, editing or form submission. SDK failures are contained. Browser Do Not Track and SDK opt-out are respected.
-- Tracking is off unless explicitly enabled. Local/preview work does not send events by default. Only production is configured to send to this project. PostHog is a hosted service: ingestion follows the existing project's usage/billing settings; no paid add-ons are enabled by this change.
+Adding an event = add it to `EVENTS` and `ALLOWED` in `lib/analytics/taxonomy.ts` and to this table. `tests/unit/analytics.test.ts` covers naming, super properties, the allowlist and URL scrubbing.
 
-## Configuration
-
-Store these in Vercel project environment variables, not committed `.env` files:
-
-| Variable | Value |
-| --- | --- |
-| `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` | The project's public ingestion token; never a personal/admin API key |
-| `NEXT_PUBLIC_POSTHOG_HOST` | `https://us.i.posthog.com` |
-| `NEXT_PUBLIC_ANALYTICS_ENABLED` | `true` for production; unset/false for local and preview |
-| `NEXT_PUBLIC_ANALYTICS_ENVIRONMENT` | `production` (or `verification` for an intentional test) |
-
-These are build-time browser settings: redeploy after changing them. Project ID 666931 is for dashboard/API administration, not the SDK initialization token. No private PostHog API key is required.
-
-## Adding another sub-app
-
-1. Reuse `lib/analytics/schema.ts`, `lib/analytics/client.ts` and `components/WebsiteAnalytics.tsx` (extract them into a shared package when a second app adopts them).
-2. Keep `source`, `site_id`, event names, schema version, allowlists and persistence name unchanged. Set that repo's `WEBSITE_CONTEXT.app_id` and `BP`; adapt `websitePage()` to its route templates, never raw dynamic IDs.
-3. Mount `WebsiteAnalytics` once in its root layout. Mark fixed CTAs with a known `data-website-cta` value. Emit success events only after the corresponding operation succeeds. Use existing events where the semantics match; add domain-specific `website_<object>_<action>` events deliberately and document them here.
-4. Configure the same US project token/host for production. Keep previews/local disabled. Extend the privacy tests for new routes/properties before enabling tracking.
-5. In PostHog, filter `source=website`, `site_id=yourappisdead`, `environment=production`; group by `app_id`. A basic funnel is `$pageview` (home) → `website_cta_clicked` → `website_auth_completed` → `website_form_created` → `website_form_publish_changed` (`published=true`). These are anonymous browser funnels, not identified-user/account counts.
-
-## Verification
-
-Unit coverage checks route redaction, unknown-event/property rejection, profile/referrer removal, one-time initialization, disabled mode, route preservation during SDK loading and failure containment. Full browser verification remains blocked by the local browser launch failure documented in PARITY_REPORT.md. An ingestion test establishes endpoint acceptance only; it is not evidence that an actual browser event fired or a dashboard query processed it.
-
-Production environment configuration was added to the existing `muckstack-projects/typeformisdead` Vercel project on 2026-10-15. One synthetic `website_analytics_verified` event with `environment=verification` was accepted by `https://us.i.posthog.com/i/v0/e/` with `status: Ok`. No person profile, actual form data or real respondent submission was sent for this check.
+## Where the calls live
+`lib/analytics/` (client + taxonomy), `components/WebsiteAnalytics.tsx` (CTA clicks), `components/TfLogin.tsx` (auth), `components/typeform/Dashboard.tsx` (identify, sign-out, create/delete), `components/typeform/Builder.tsx` (publish), `components/typeform/FillForm.tsx` (responses).
