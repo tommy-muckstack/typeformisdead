@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Form } from "@/lib/forms/types";
 import { FORM_TEMPLATES } from "@/lib/forms/templates";
-import { trackWebsite } from "@/lib/analytics/client";
+import { track, identify, resetIdentity, EVENTS } from "@/lib/analytics";
 import { BP } from "@/lib/basepath";
 import { NewFormPage } from "./Chrome";
 import { MaterialIcon as Icon, type MaterialIconName } from "./MaterialIcon";
@@ -14,7 +14,9 @@ type Row = Form & { responses: number; views: number };
 const tabs: [string, MaterialIconName][] = [["Forms", "dynamic_form"], ["Contacts", "group"], ["Automations", "account_tree"], ["Insights", "query_stats"], ["Pages", "web"], ["Research Flow", "travel_explore"]];
 const suggestions = ["Identify product strengths and weaknesses through detailed user feedback for targeted enhancements.", "Collect attendees' opinions and suggestions to enhance future event planning and execution."];
 
-export function Dashboard({ displayName = "My account" }: { displayName?: string }) {
+export function Dashboard({ displayName = "My account", uid, accountType }: { displayName?: string; uid?: string; accountType?: "firebase" | "guest" | "demo" }) {
+  // Signed-in accounts are identified by Firebase uid; guests and the demo account stay anonymous.
+  useEffect(() => { if (uid && accountType) identify(uid, accountType); }, [uid, accountType]);
   const [forms, setForms] = useState<Row[] | null>(null);
   const [picker, setPicker] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -22,15 +24,15 @@ export function Dashboard({ displayName = "My account" }: { displayName?: string
   const router = useRouter();
   const load = useCallback(async () => { const r = await fetch(`${BP}/api/forms`); if (r.ok) setForms((await r.json()).forms); else setForms([]); }, []);
   useEffect(() => { load(); }, [load]);
-  const create = async (template: string, title?: string, prompt?: string) => { setBusy(true); const r = await fetch(`${BP}/api/forms`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, ...(prompt ? { prompt } : {}), ...(title ? { title: title.slice(0, 80) } : {}) }) }); setBusy(false); if (r.ok) { const created = (await r.json()).form; trackWebsite("website_form_created", { creation_method: prompt ? "prompt" : template === "blank" ? "blank" : "template", question_count: created.questions.length }); router.push(`/app/forms/${created.id}`); } };
-  const del = async (f: Row) => { if (!confirm(`Delete “${f.title}” and its ${f.responses} responses?`)) return; const response = await fetch(`${BP}/api/forms/${f.id}`, { method: "DELETE" }); if (response.ok) trackWebsite("website_form_deleted"); load(); };
+  const create = async (template: string, title?: string, prompt?: string) => { setBusy(true); const r = await fetch(`${BP}/api/forms`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, ...(prompt ? { prompt } : {}), ...(title ? { title: title.slice(0, 80) } : {}) }) }); setBusy(false); if (r.ok) { const created = (await r.json()).form; track(EVENTS.app_form_created, { creation_method: prompt ? "prompt" : template === "blank" ? "blank" : "template", question_count: created.questions.length }); router.push(`/app/forms/${created.id}`); } };
+  const del = async (f: Row) => { if (!confirm(`Delete “${f.title}” and its ${f.responses} responses?`)) return; const response = await fetch(`${BP}/api/forms/${f.id}`, { method: "DELETE" }); if (response.ok) track(EVENTS.app_form_deleted); load(); };
   const initial = displayName.trim().charAt(0).toUpperCase() || "T";
   return <div className="tfw">
     <header className="tfw__hd">
       <span className="tfw__logo" aria-label="TypeformIsDead"><i /><b>{initial}</b></span>
       <span className="tfw__acct">{displayName}<Icon name="keyboard_arrow_down" size={16} /></span><span className="tfw__sp" />
       <span className="tfw__lk"><Icon name="apps" />Integrations</span><span className="tfw__lk"><Icon name="palette" />Brand kit</span><span className="tfw__help" aria-label="Help"><Icon name="help" size={20} /></span>
-      <form method="post" action={`${BP}/api/session/logout`}><button className="tfw__av" title="Sign out" aria-label="Sign out">{initial}</button></form>
+      <form method="post" action={`${BP}/api/session/logout`} onSubmit={() => { track(EVENTS.app_signed_out); resetIdentity(); }}><button className="tfw__av" title="Sign out" aria-label="Sign out">{initial}</button></form>
     </header>
     <nav className="tfw__tabs" aria-label="Workspace navigation">{tabs.map(([label, icon], index) => <span key={label} className={index === 0 ? "on" : ""} aria-current={index === 0 ? "page" : undefined}><Icon name={icon} />{label}{label === "Pages" && <em>Beta</em>}</span>)}</nav>
     <div className="tfw__body">

@@ -1,29 +1,38 @@
-import { describe, expect, it } from "vitest";
-import { safeEventProperties, sanitizeAnalyticsEvent, websitePage } from "@/lib/analytics/schema";
-
-describe("website analytics privacy and taxonomy", () => {
-  it.each([
-    ["/typeformisdead", "home"], ["/typeformisdead/", "home"], ["/login?email=private@example.test", "login"],
-    ["/typeformisdead/app", "workspace"], ["/app/forms/private-id", "form_builder"], ["/typeformisdead/f/private-id?answer=secret#email", "form_respondent"],
-  ])("classifies %s without query data", (path, page) => {
-    const actual = websitePage(path);
-    expect(actual.page_name).toBe(page);
-    expect(JSON.stringify(actual)).not.toMatch(/private-id|private@|secret|email=/);
+import { describe, it, expect } from "vitest";
+import { EVENTS, EVENT_PREFIXES, APP, superProps } from "@/lib/analytics/taxonomy";
+describe("analytics taxonomy", () => {
+  it("uses the shared prefixes and snake_case", () => { for (const e of Object.values(EVENTS)) { expect(e, e).toMatch(/^[a-z]+(_[a-z]+)+$/); expect(EVENT_PREFIXES.some(p => e.startsWith(p)), e).toBe(true); } });
+  it("never puts the product name in an event name", () => { for (const e of Object.values(EVENTS)) expect(e.includes(APP.replace(/isdead$/, ""))).toBe(false); });
+  it("sends the hub's super properties", () => { expect(superProps("app")).toEqual({ product: APP, surface: "app", platform: "web" }); });
+});
+import { scrub } from "@/lib/analytics/posthog";
+describe("analytics privacy", () => {
+  it("strips query strings, hashes and titles", () => {
+    const e = scrub({ event: "$pageview", properties: { $current_url: "https://yourappisdead.com/x/app?url=https://secret.example#frag", $referrer: "https://google.com/search?q=me", title: "My private doc" } });
+    expect(e.properties.$current_url).toBe("https://yourappisdead.com/x/app"); expect(e.properties.$referrer).toBe("https://google.com/search"); expect("title" in e.properties).toBe(false);
   });
-  it("does not leak unknown path segments", () => {
-    expect(websitePage("/typeformisdead/account/private@example.test").route_template).toBe("/typeformisdead/unknown");
+});
+describe("analytics privacy (nested person properties)", () => {
+  it("scrubs every url/referrer/pathname key, including session-entry and $set_once bags", () => {
+    const e = scrub({ event: "$pageview", $set_once: { $initial_referrer: "https://x.example/?q=1" }, properties: { $session_entry_url: "https://yourappisdead.com/x/?ref=me#y", $session_entry_pathname: "/x/", $set: { $current_url: "https://yourappisdead.com/x/app?a=1" }, $set_once: { $initial_current_url: "https://yourappisdead.com/x/?utm_source=secret#frag" } } });
+    expect(e.properties.$session_entry_url).toBe("https://yourappisdead.com/x/");
+    expect(e.properties.$set_once.$initial_current_url).toBe("https://yourappisdead.com/x/");
+    expect(e.properties.$set.$current_url).toBe("https://yourappisdead.com/x/app");
+    expect(e.$set_once.$initial_referrer).toBe("https://x.example/");
   });
-  it("only retains bounded, known event properties", () => {
-    expect(safeEventProperties({ method: "google", flow: "login", question_count: 4, published: true, password: "secret", email: "private@example.test", prompt: "private", answers: { name: "private" }, cta_location: "private" })).toEqual({ method: "google", flow: "login", question_count: 4, published: true });
-    expect(safeEventProperties({ question_count: 101, method: "private", published: "yes" })).toEqual({});
+});
+import { safeProps } from "@/lib/analytics/taxonomy";
+describe("TypeformIsDead property allowlist", () => {
+  it("rebuilds properties from the allowlist and drops events with unknown values", () => {
+    expect(safeProps("app_form_created", { creation_method: "prompt", question_count: 4, title: "private", prompt: "private" })).toEqual({ creation_method: "prompt", question_count: 4 });
+    expect(safeProps("app_form_created", { creation_method: "prompt", question_count: 1000 })).toBeNull();
+    expect(safeProps("app_auth_started", { method: "email", flow: "signin" })).toBeNull();
+    expect(safeProps("landing_cta_clicked", { target: "hero" })).toEqual({ target: "hero" });
+    expect(safeProps("landing_cta_clicked", { target: "https://evil" })).toBeNull();
+    expect(safeProps("app_form_response_submitted", { answers: ["private"] })).toEqual({});
+    expect(safeProps("__proto__", {})).toBeNull();
   });
-  it("removes SDK URL, title, referrer, profiles and arbitrary text before sending", () => {
-    const event = { event: "website_form_created", uuid: "test-event", properties: { token: "public-project-token", distinct_id: "anonymous-test-id", $session_id: "test-session", $current_url: "https://host/f/secret?email=private", $referrer: "https://private.example/?token=secret", $title: "Private form title", $set: { email: "private@example.test" }, $initial_current_url: "private", creation_method: "prompt", question_count: 3, prompt: "Private prompt", answers: "secret", app_id: "spoofed", source: "spoofed", __website_route: "/app/forms/secret" } };
-    const sanitized = sanitizeAnalyticsEvent(event, "/typeformisdead/app/forms/private-id", "https://yourappisdead.com", "production")!;
-    expect(sanitized.properties).toMatchObject({ source: "website", site_id: "yourappisdead", app_id: "typeformisdead", schema_version: 1, environment: "production", creation_method: "prompt", question_count: 3, route_template: "/typeformisdead/app/forms/:form_id", $process_person_profile: false, $current_url: "https://yourappisdead.com/typeformisdead/app/forms/:form_id", distinct_id: "anonymous-test-id" });
-    expect(JSON.stringify(sanitized)).not.toMatch(/Private|private|spoofed|secret|\$set|\$referrer|__website_route/);
-  });
-  it.each(["$autocapture", "$snapshot", "$identify", "$exception", "unexpected_event"])("drops unapproved %s events", event => {
-    expect(sanitizeAnalyticsEvent({ event, properties: {} }, "/", "https://yourappisdead.com", "production")).toBeNull();
+  it("masks form ids, which work like share links", () => {
+    expect(scrub({ event: "$pageview", properties: { $current_url: "https://yourappisdead.com/typeformisdead/f/abc123?prefill=x" } }).properties.$current_url).toBe("https://yourappisdead.com/typeformisdead/f/:id");
   });
 });
