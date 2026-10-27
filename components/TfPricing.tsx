@@ -25,16 +25,16 @@ const GROUPS: [string, string[]][] = [
   ["Developer tools", ["Access the API", "Webhooks", "Embed SDK", "Custom scripts"]],
   ["Support", ["Email support", "Live chat support", "Priority support", "VIP onboarding and training", "Customer Success Manager"]],
 ];
-const FAQ = ["What are the benefits of a paid vs free plan?", "What’s included in the free plan?", "Can I upgrade, downgrade or switch between plans?", "Can I pause a paid subscription?", "Do you offer discounts if I pay yearly instead of monthly?", "Is there a limit to the number of responses I can collect?", "What happens if I cancel my subscription?", "How secure is Typeform?", "What can I do with my data once it's collected?", "I have additional questions, who do I contact?"];
+const FAQ = ["Are these TypeformIsDead's prices?", "What’s included for free?", "Do I need a credit card?", "Is the code open source?", "What can I do with my data once it's collected?", "Is TypeformIsDead affiliated with Typeform?"];
 const ADDONS: [string, string, string, string, string][] = [["2,400", "Available on all plans except Free and Basic", "25 USD /mo", "Billed monthly", "Get add-on"], ["12,000", "Available on all plans except Free, Basic, and Plus", "75 USD /mo", "Billed monthly", "Get add-on"], ["Custom", "Available on Enterprise and Growth Custom plans.", "Custom", "Billed annually", "Contact sales"]];
 const GH: Record<string, number> = {"Usage limits": 881, "Be on-brand": 1146, "Customize your forms": 1405, "Share and embed": 371, "Connect your apps": 1140, "Automate your workflows": 691, "Generate insights and optimize performance": 702, "Capture more": 609, "Security and compliance": 580, "Account management": 690, "Developer tools": 400, "Support": 517, "Team collaboration": 0};
 const dot = (k: string) => <i className="ck" key={k}>✓</i>;
 export function TfPricing() {
   return <div className="tfp pk">
-    <div className="tfp-banner">Connect Claude, ChatGPT, or any MCP-ready assistant to your TypeformIsDead account. <u>Try it now</u><i>✕</i></div>
+    <div className="tfp-banner">TypeformIsDead is free and open source. The plans below are Typeform&apos;s, shown for comparison. <u>Try it now</u><i>✕</i></div>
     <header className="tfp-nav"><Link href="/"><Logo /></Link><nav><a>Platform ⌄</a><a>Solutions ⌄</a><a>Resources ⌄</a><Link href="/pricing">Pricing</Link></nav><span /><Link className="tfp-g" href="/login">Log in</Link><Link className="tfp-g b" href="/login">Contact sales</Link><Link className="tfp-s" href="/login">Sign up</Link></header>
     <Band h={3425} className="tfp-top">
-      <h1>Get started with AI forms</h1>
+      <h1>Typeform&apos;s plans, for comparison</h1>
       <div className="tfp-bar"><span className="tgl"><i>Monthly</i><b>Yearly (Save 30%)</b></span><span className="ent"><b>Enterprise</b><em>5+ users, SSO, dedicated support</em><u>Contact sales →</u></span></div>
       <div className="tfp-plans">{PLANS.map(p => <div key={p.n} className={"plan" + (p.hot ? " hot" : "")}>{p.hot && <span className="free">Free trial</span>}<h3>{p.n}</h3><p>{p.d}</p><div className="pr"><b>{p.p} USD</b><i>/mo</i></div><div className="sv">{p.s}</div><Link href="/login" className="cta">{p.b}</Link><div className="inc"><b>Includes:</b>{p.i.map(x => <div key={x}>{x}</div>)}</div><div className="inc"><b>Features you&apos;ll love:</b>{p.f.map(x => <div key={x} className="chk">✓ {x}</div>)}</div><u className="all">See all features</u></div>)}</div>
       <p className="hr">Need a plan for HR teams? <u>Typeform Talent plan details</u> — starting at 119 USD/mo</p>
@@ -49,15 +49,15 @@ export function TfPricing() {
           <div className="lists"><div><h5>Design &amp; run research</h5><ul>{["Recruit and screen participants with built-in panel access", "Moderated and unmoderated video research", "Automatic transcription and tagging"].map(x => <li key={x}>{x}</li>)}</ul></div><div><h5>Analyze &amp; share insights</h5><ul>{["AI-powered analysis and insight generation", "Highlight reels and shareable reports", "Integrates with your existing Typeform workspace"].map(x => <li key={x}>{x}</li>)}</ul></div></div>
           <div className="vid"><span className="play">▶</span><div className="vb"><i>▶</i><small>0:23</small><s /></div></div></div>
       </div>
-      <p className="und">Still undecided? Try our <u>Free plan</u> then upgrade when you’re ready.</p>
+      <p className="und">TypeformIsDead has no plans to upgrade to. <u>Every feature is free</u>.</p>
       <h2 className="cmp">Compare all plans</h2>
     </Band>
     <Band h={10865} className="tfp-table">
       <div className="head"><span className="tgl"><i>Monthly</i><b>Yearly (Save 30%)</b></span>{PLANS.map(p => <div key={p.n}><b>{p.n}</b><span>{p.p} USD /mo</span><Link href="/login">{p.b.replace("Try free for 14 days", "Try for free").slice(0, 14)}</Link></div>)}</div>
       {GROUPS.map(([g, rows]) => <div key={g} className={"grp" + (g === "Team collaboration" ? " nm" : "")} style={{ "--gh": GH[g] + "px" } as React.CSSProperties}><h4>{g}</h4>{rows.map((r, i) => <div className="row" key={r}><span>{r}</span><i className="info">i</i>{[0, 1, 2, 3].map(c => g === "Usage limits" ? <em key={c}>{["Unlimited", "Unlimited", "Unlimited", "Unlimited"][c]}</em> : (i + c) % 5 === 0 && c === 0 ? <em key={c} className="na">Not available</em> : dot(String(c)))}</div>)}</div>)}
     </Band>
-    <Band h={740} className="tfp-trust"><h2>Trusted by 95% of the Fortune 500</h2><div className="lg"><b>Webflow</b><b>_zapier</b><b>BARRY&apos;S</b></div><blockquote>“We just hosted a virtual event for 60,000 people using TypeformIsDead for the bookings.”<small>Marcus Barrera, Senior Director, Corporate Sales and Partnerships at Barry&apos;s</small></blockquote></Band>
-    <Band h={1360} className="tfp-faq"><h2>Frequently asked questions</h2><p>If you have any additional questions, visit our help center.</p><div className="list">{FAQ.map((q, i) => <div key={q}><b>{q}</b><i>⌄</i>{i === 0 && <span>Paid plans unlock powerful features, more responses, and tons of customization options, making it easier and faster for you to collect valuable data and take action on it.</span>}</div>)}</div><div className="end"><h2>The form is just the beginning</h2><Link href="/login">Start creating</Link></div></Band>
+    <Band h={740} className="tfp-trust"><h2>Built in the open</h2><div className="lg"><b>Free</b><b>Open source</b><b>Apache-2.0</b></div><blockquote>“Every feature is free. No plans, no seats and no trial that runs out.”<small>The TypeformIsDead promise</small></blockquote></Band>
+    <Band h={1360} className="tfp-faq"><h2>Frequently asked questions</h2><p>Questions or bugs? Open an issue on GitHub.</p><div className="list">{FAQ.map((q, i) => <div key={q}><b>{q}</b><i>⌄</i>{i === 0 && <span>No. The plans, prices and limits on this page are Typeform&apos;s, shown for comparison. TypeformIsDead has no paid plans.</span>}</div>)}</div><div className="end"><h2>The form is just the beginning</h2><Link href="/login">Start creating</Link></div></Band>
     <Foot cols={FOOT} bg="#2a222b" color="#fff" minH={845} top={<div className="tfp-ftop"><Logo /></div>} legal={<><span>Contact sales</span><span>Legal</span><span>© 2026</span></>} note={`TypeformIsDead is an independent open-source project, not affiliated with or endorsed by Typeform S.L. Typeform is a trademark of its owner. Source: ${Gh("typeformisdead")} (Apache-2.0)`} />
   </div>;
 }
